@@ -4,6 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <meta name="theme-color" content="#06030f">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="PRISMFALL">
 <title>PRISMFALL — Gem Cascade Casino</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@500;600;700&display=swap');
@@ -76,6 +79,12 @@ body{
 .hud-card .lbl{font-size:.62rem;letter-spacing:.22em;color:var(--dim);text-transform:uppercase}
 .hud-card .val{font-family:'Orbitron',sans-serif;font-weight:700;font-size:clamp(.95rem,4vw,1.2rem)}
 #coins-val{color:var(--gold);text-shadow:0 0 12px rgba(255,201,60,.5)}
+#gems-card{cursor:pointer}
+#reload-plus{
+  display:inline-block;background:var(--good);color:#03301d;border-radius:50%;
+  width:13px;height:13px;line-height:13px;font-size:.6rem;font-weight:900;
+  text-align:center;margin-left:3px;vertical-align:1px;
+}
 #last-win-val{color:var(--good)}
 #level-card{flex:.7;position:relative;cursor:pointer}
 #level-val{color:var(--cyan)}
@@ -210,8 +219,14 @@ body{
   animation:shimmer 2s linear infinite;
 }
 @keyframes shimmer{to{background-position:200% 0}}
-/* ===== Controls ===== */
-#controls{display:flex;align-items:center;justify-content:center;gap:10px}
+/* ===== Controls (sticky glass bar — SPIN always reachable) ===== */
+#controls{
+  display:flex;align-items:center;justify-content:center;gap:10px;
+  position:sticky;bottom:max(10px,env(safe-area-inset-bottom));z-index:30;
+  background:rgba(10,5,26,.82);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+  border:1px solid var(--panel-edge);border-radius:20px;padding:9px 12px;
+  box-shadow:0 8px 30px rgba(0,0,0,.55);
+}
 #bet-block{display:flex;flex-direction:column;align-items:center;gap:4px}
 .bet-row{display:flex;align-items:center;gap:6px}
 .bet-adj{
@@ -436,16 +451,63 @@ body{
 #changelog{text-align:left;padding:8px 12px;background:rgba(0,0,0,.3);border-radius:8px;margin-top:6px;line-height:1.7}
 #changelog b{color:var(--cyan)}
 
+/* ===== Desktop hover affordances ===== */
+@media (hover:hover){
+  #spin-btn:not(:disabled):hover{filter:brightness(1.18)}
+  .icon-btn:hover,.bet-adj:hover{border-color:var(--cyan);box-shadow:0 0 8px rgba(0,229,255,.3)}
+  .mg-btn:hover,.boon-card:hover{filter:brightness(1.2)}
+  .tab-btn:hover{color:var(--text)}
+  #forge-btn.ready:hover,#ante-btn:hover{filter:brightness(1.15)}
+}
+
+/* ===== Desktop / widescreen layout ===== */
+@media (min-width:1024px){
+  #app{
+    max-width:1000px;display:grid;column-gap:22px;row-gap:8px;align-items:start;
+    grid-template-columns:minmax(0,540px) minmax(320px,1fr);
+    grid-template-areas:
+      "header header" "hud hud" "jp jp"
+      "forge side" "machine side" "win side" "controls side"
+      "footer footer";
+  }
+  #header{padding:0}
+  #logo{font-size:1.75rem}
+  #subtitle{font-size:.68rem}
+  #win-display{min-height:42px}
+  #header{grid-area:header}
+  #top-row{grid-area:hud}
+  #jackpot-strip{grid-area:jp}
+  #forge-bar{grid-area:forge}
+  #machine{grid-area:machine}
+  #win-display{grid-area:win}
+  #controls{grid-area:controls}
+  #side-panel{grid-area:side;position:sticky;top:12px}
+  #version-footer{grid-area:footer}
+  #spin-btn{width:106px;height:106px}
+  .panel{max-height:600px;overflow-y:auto}
+}
+
+/* ===== Mobile: touch targets ===== */
+@media (max-width:640px){
+  .bet-adj{width:40px;height:40px}
+}
 @media (max-width:480px){
-  #spin-btn{width:94px;height:94px;font-size:.92rem}
-  .icon-btn{width:42px;height:42px}
-  #toast{top:auto;bottom:18px;right:50%;transform:translate(50%,150%)}
+  #app{padding:6px 8px calc(14px + env(safe-area-inset-bottom));gap:6px}
+  #logo{font-size:clamp(1.3rem,6.4vw,1.8rem)}
+  .hud-card{padding:4px 7px;border-radius:10px}
+  #forge-bar{padding:5px 9px}
+  #machine{padding:8px}
+  #win-display{min-height:46px}
+  #spin-btn{width:92px;height:92px;font-size:.9rem}
+  .icon-btn{width:44px;height:44px}
+  #toast{top:auto;bottom:calc(96px + env(safe-area-inset-bottom));right:50%;transform:translate(50%,250%)}
   #toast.show{transform:translate(50%,0)}
 }
-@media (max-width:480px) and (max-height:700px){
+@media (max-width:480px) and (max-height:760px){
   #subtitle{display:none}
-  #app{gap:6px}
-  .cell{font-size:clamp(1.1rem,5.6vw,1.7rem)}
+  #header{padding:2px 0 0}
+  .cell{font-size:clamp(1.05rem,5.4vw,1.6rem)}
+  .jp-pill{padding:3px 2px}
 }
 </style>
 </head>
@@ -466,8 +528,8 @@ body{
       <div class="val" id="level-val">1</div>
       <div id="xp-bar"><div id="xp-fill"></div></div>
     </div>
-    <div class="hud-card">
-      <div class="lbl">Gems</div>
+    <div class="hud-card" id="gems-card" title="Gem Bank — free reloads">
+      <div class="lbl">Gems <span id="reload-plus">＋</span></div>
       <div class="val" id="coins-val">5,000</div>
     </div>
     <div class="hud-card">
@@ -520,6 +582,7 @@ body{
     </div>
   </div>
 
+  <div id="side-panel">
   <div id="tabs">
     <button class="tab-btn active" data-tab="pay">Pays</button>
     <button class="tab-btn" data-tab="stats">Stats</button>
@@ -530,10 +593,12 @@ body{
   <div class="panel" id="panel-stats"></div>
   <div class="panel" id="panel-achieve"><div id="achieve-grid"></div></div>
   <div class="panel" id="panel-history"><div id="history-list"></div></div>
+  </div>
 
   <details id="version-footer">
-    <summary>v1.0 · PRISMFALL — Gem Cascade Casino</summary>
+    <summary>v1.1 · PRISMFALL — Gem Cascade Casino</summary>
     <div id="changelog">
+      <b>v1.1</b> — Mobile &amp; desktop QA pass: sticky spin bar that clears Safari's toolbar, widescreen two-column desktop layout, bigger touch targets, iOS web-app meta. Free spins and Hold &amp; Win respins are now player-triggered (only AUTO automates). New 💳 Gem Bank free token reloads via the Gems card.<br>
       <b>v1.0</b> — Initial release: 6×5 scatter-pays cascade engine, charged-gem multipliers up to ×500, free spins with accumulating multiplier, Lightning Hold &amp; Win with 4 progressive jackpots, the Gem Forge boon system, Gem Mine / Crystal Wheel / Gem Cutter mini-games, bonus buy, ante bet, XP levels, 24 achievements, daily wheel, synthesized soundtrack.<br>
     </div>
   </details>
@@ -892,7 +957,7 @@ async function doSpin(opts = {}) {
   if (spinning) return;
   const isFree = state.fs > 0;
   const cost = isFree || opts.free ? 0 : betCost();
-  if (!isFree && state.coins < cost) { toast('💸 Not enough gems! Claim the daily wheel or wait for a boon.'); autoSpin = false; updateUI(); return; }
+  if (!isFree && state.coins < cost) { autoSpin = false; updateUI(); openBank(true); return; }
   spinning = true;
   SFX.spin();
   $('win-message').textContent = isFree ? 'FREE SPIN' : 'Cascading…';
@@ -1064,18 +1129,14 @@ async function doSpin(opts = {}) {
   }
 
   spinning = false;
+  // free spins are player-triggered: press SPIN for each one (AUTO still works)
+  if (state.fs === 0 && state.fsTotal > 0) await endFreeSpins();
   updateUI();
   save();
 
-  // ---- continue loops ----
-  if (state.fs > 0) {
-    await sleep(speed(700));
-    return doSpin();
-  }
-  if (state.fs === 0 && state.fsTotal > 0) await endFreeSpins();
-  if (autoSpin && !spinning) {
+  if (autoSpin) {
     await sleep(speed(650));
-    if (autoSpin) return doSpin();
+    if (autoSpin && !spinning) return doSpin();
   }
 }
 
@@ -1179,7 +1240,8 @@ async function startHoldWin(startCoins = 6) {
   $('mg-title').textContent = '⚡ HOLD & WIN';
   $('mg-sub').textContent = 'New coins reset your respins';
   $('mg-body').innerHTML = `<div id="hw-spins-row"></div><div id="hw-grid"></div>
-    <div id="hw-total" style="font-family:'Orbitron',sans-serif;color:var(--gold);font-size:1rem"></div>`;
+    <div id="hw-total" style="font-family:'Orbitron',sans-serif;color:var(--gold);font-size:1rem"></div>
+    <button class="mg-btn gold pulse" id="hw-respin">RESPIN (3)</button>`;
   $('mg-overlay').classList.add('active');
 
   function renderHW(newIdx = -1) {
@@ -1201,27 +1263,35 @@ async function startHoldWin(startCoins = 6) {
     return total;
   }
   renderHW();
-  await sleep(speed(900));
 
-  while (respins > 0 && cells.some(c => !c)) {
-    await sleep(speed(750));
-    SFX.spin();
-    respins--;
-    // each respin: each empty cell has a chance to land a coin
-    const empties = cells.map((c, i) => c ? -1 : i).filter(i => i >= 0);
-    let landed = 0;
-    for (const i of empties) {
-      if (Math.random() < 0.13) {
-        cells[i] = rollHwCoin();
-        landed++;
-        SFX.lock();
-        renderHW(i);
-        await sleep(speed(260));
+  // player-triggered respins — press the button for each one
+  await new Promise(resolve => {
+    const btn = $('hw-respin');
+    btn.onclick = async () => {
+      if (btn.disabled) return;
+      btn.disabled = true;
+      btn.classList.remove('pulse');
+      SFX.spin();
+      respins--;
+      const empties = cells.map((c, i) => c ? -1 : i).filter(i => i >= 0);
+      let landed = 0;
+      for (const i of empties) {
+        if (Math.random() < 0.13) {
+          cells[i] = rollHwCoin();
+          landed++;
+          SFX.lock();
+          renderHW(i);
+          await sleep(speed(260));
+        }
       }
-    }
-    if (landed > 0) { respins = 3; toast('🪙 Coin landed — respins reset!'); }
-    renderHW();
-  }
+      if (landed > 0 && cells.some(c => !c)) { respins = 3; toast('🪙 Coin landed — respins reset!'); }
+      renderHW();
+      if (respins <= 0 || cells.every(c => c)) { resolve(); return; }
+      btn.textContent = `RESPIN (${respins})`;
+      btn.classList.add('pulse');
+      btn.disabled = false;
+    };
+  });
 
   const full = cells.every(c => c);
   let total = 0;
@@ -1290,7 +1360,6 @@ async function grantBoon(id) {
     toast('⚡ Charged Spins: 5 spins with guaranteed extra Charged Gems!');
   } else if (id === 'prism') {
     await startFreeSpins(8);
-    doSpin();
   } else if (id === 'rush') {
     await startHoldWin(8);
   } else if (id === 'mine') {
@@ -1531,10 +1600,38 @@ function openBuyMenu() {
     updateUI();
     await fn();
   };
-  $('buy-fs').onclick = () => buy(fsCost, async () => { await startFreeSpins(10); doSpin(); });
-  $('buy-super').onclick = () => buy(superCost, async () => { await startFreeSpins(10); state.fsMult = 10; $('fs-mult').textContent = '×10'; doSpin(); });
+  $('buy-fs').onclick = () => buy(fsCost, () => startFreeSpins(10));
+  $('buy-super').onclick = () => buy(superCost, async () => { await startFreeSpins(10); state.fsMult = 10; $('fs-mult').textContent = '×10'; });
   $('buy-hw').onclick = () => buy(hwCost, () => startHoldWin(7));
   $('buy-cancel').onclick = () => { SFX.click(); $('mg-overlay').classList.remove('active'); };
+}
+
+/* ============================================================
+   GEM BANK — free token reloads (monetization hook for later)
+   ============================================================ */
+const RELOADS = [5000, 25000, 100000];
+function openBank(broke = false) {
+  if (spinning) return;
+  SFX.click();
+  $('mg-title').textContent = '💳 GEM BANK';
+  $('mg-sub').textContent = broke
+    ? 'Out of gems! Top up — it’s on the house while PRISMFALL is in beta.'
+    : 'Free reloads while PRISMFALL is in beta. Spend responsibly anyway. 😉';
+  $('mg-body').innerHTML = RELOADS.map((v, i) =>
+    `<button class="boon-card" data-reload="${i}"><span class="be">${['💎', '💰', '🏦'][i]}</span>
+     <span><span class="bn">+${fmt(v)} GEMS</span><br><span class="bd">FREE · instant top-up</span></span></button>`
+  ).join('') + `<button class="mg-btn" id="bank-cancel">CLOSE</button>`;
+  $('mg-overlay').classList.add('active');
+  document.querySelectorAll('[data-reload]').forEach(b => b.onclick = () => {
+    const amt = RELOADS[+b.dataset.reload];
+    state.coins += amt;
+    state.reloads = (state.reloads || 0) + 1;
+    SFX.coin(); coinShower(30);
+    $('mg-overlay').classList.remove('active');
+    toast(`💳 Reloaded +${fmt(amt)} gems!`);
+    updateUI(); save();
+  });
+  $('bank-cancel').onclick = () => { SFX.click(); $('mg-overlay').classList.remove('active'); };
 }
 /* ============================================================
    PROGRESSION — XP, levels, achievements, history
@@ -1634,6 +1731,7 @@ function renderStats() {
     <div class="stat-box"><div class="sl">Bonuses Played</div><div class="sv">${fmt(st.bonuses)}</div></div>
     <div class="stat-box"><div class="sl">Jackpots Hit</div><div class="sv">${fmt(st.jackpots)}</div></div>
     <div class="stat-box"><div class="sl">Boons Smelted</div><div class="sv">${fmt(state.forgeCount)}</div></div>
+    <div class="stat-box"><div class="sl">Bank Reloads</div><div class="sv">${fmt(state.reloads || 0)}</div></div>
     <div class="stat-box"><div class="sl">XP to Next Level</div><div class="sv">${fmt(Math.max(0, xpNeeded(state.level) - state.xp))}</div></div>
   </div>`;
 }
@@ -1674,6 +1772,7 @@ $('turbo-btn').onclick = () => { SFX.click(); state.turbo = !state.turbo; update
 $('sound-btn').onclick = () => { state.sound = !state.sound; SFX.click(); updateUI(); save(); };
 $('buy-btn').onclick = openBuyMenu;
 $('forge-btn').onclick = openForge;
+$('gems-card').onclick = () => openBank(false);
 $('level-card').onclick = () => toast(`⭐ Level ${state.level} · ${fmt(Math.floor(state.xp))}/${fmt(xpNeeded(state.level))} XP<br><span style="color:var(--dim);font-size:.75rem">Earn XP by wagering and winning. Level-ups pay gem rewards.</span>`);
 
 document.querySelectorAll('.tab-btn').forEach(b => b.onclick = () => {

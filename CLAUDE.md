@@ -27,7 +27,7 @@
 
 Both are inside the `<details id="version-footer">` near the bottom of `index.html`.
 
-## Current version: v1.0
+## Current version: v1.1
 
 ## Architecture
 - Single file: `index.html` — all CSS, JS, and HTML inline, no build step
@@ -55,6 +55,8 @@ Both are inside the `<details id="version-footer">` near the bottom of `index.ht
 - **Gem Forge**: shattered gems fill a meter; full meter = pick 1 of 3 boons (charged spins, free spins, Hold & Win, Gem Mine, Crystal Wheel, Gem Cutter, Coin Vault)
 - **Mini-games**: Gem Mine (push-your-luck), Crystal Wheel (two-tier SVG wheel), Gem Cutter (timing skill)
 - **Bonus Buy** (100×/200×/120× bet), **Ante Bet** (×1.25 cost, +50% scatter/nugget odds)
+- **Gem Bank**: free token reloads via the Gems HUD card (placeholder for future monetization)
+- **Engagement rule**: nothing auto-spins except the AUTO button — free spins and Hold & Win respins are player-triggered
 - **Meta**: XP levels with rewards, 24 achievements, daily wheel (20h cooldown), session stats, spin history
 - All audio is synthesized via WebAudio — no sound files. All art is emoji/CSS/SVG/Canvas — no image files.
 
