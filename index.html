@@ -1,0 +1,1730 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#06030f">
+<title>PRISMFALL — Gem Cascade Casino</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@500;600;700&display=swap');
+:root{
+  --bg0:#06030f;
+  --bg1:#0c0620;
+  --panel:rgba(22,13,48,.82);
+  --panel-edge:rgba(139,92,246,.35);
+  --cyan:#00E5FF;
+  --magenta:#FF2EC4;
+  --gold:#FFC93C;
+  --gold2:#FF9F1C;
+  --violet:#8B5CF6;
+  --good:#34F5A4;
+  --danger:#FF5470;
+  --text:#E8E3FF;
+  --dim:#9D93C8;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{scroll-behavior:smooth}
+body{
+  font-family:'Rajdhani',sans-serif;
+  background:var(--bg0);
+  color:var(--text);
+  min-height:100vh;
+  overflow-x:hidden;
+  padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+  user-select:none;
+  -webkit-user-select:none;
+}
+/* Aurora backdrop */
+#aurora{position:fixed;inset:0;z-index:-2;background:var(--bg0);overflow:hidden}
+#aurora::before,#aurora::after{
+  content:'';position:absolute;width:70vmax;height:70vmax;border-radius:50%;
+  filter:blur(90px);opacity:.22;
+}
+#aurora::before{
+  background:radial-gradient(circle,var(--violet),transparent 60%);
+  top:-25vmax;left:-20vmax;animation:auroraA 26s ease-in-out infinite alternate;
+}
+#aurora::after{
+  background:radial-gradient(circle,var(--cyan),transparent 60%);
+  bottom:-30vmax;right:-20vmax;animation:auroraB 32s ease-in-out infinite alternate;
+}
+@keyframes auroraA{from{transform:translate(0,0) scale(1)}to{transform:translate(12vmax,8vmax) scale(1.25)}}
+@keyframes auroraB{from{transform:translate(0,0) scale(1.2)}to{transform:translate(-10vmax,-9vmax) scale(.9)}}
+#stars{position:fixed;inset:0;z-index:-1;pointer-events:none}
+
+#app{max-width:560px;margin:0 auto;padding:8px 10px 40px;display:flex;flex-direction:column;gap:8px}
+
+/* ===== Header ===== */
+#header{text-align:center;padding:6px 0 0}
+#logo{
+  font-family:'Orbitron',sans-serif;font-weight:900;font-size:clamp(1.5rem,7vw,2.2rem);
+  letter-spacing:.14em;
+  background:linear-gradient(100deg,var(--cyan) 0%,#fff 25%,var(--magenta) 50%,var(--gold) 75%,var(--cyan) 100%);
+  background-size:300% 100%;
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+  animation:logoFlow 7s linear infinite;
+  filter:drop-shadow(0 0 14px rgba(139,92,246,.55));
+}
+@keyframes logoFlow{to{background-position:300% 0}}
+#subtitle{font-size:.78rem;letter-spacing:.42em;color:var(--dim);text-transform:uppercase;margin-top:-2px}
+
+#top-row{display:flex;gap:8px;align-items:stretch}
+.hud-card{
+  flex:1;background:var(--panel);border:1px solid var(--panel-edge);border-radius:12px;
+  padding:6px 10px;text-align:center;backdrop-filter:blur(8px);
+}
+.hud-card .lbl{font-size:.62rem;letter-spacing:.22em;color:var(--dim);text-transform:uppercase}
+.hud-card .val{font-family:'Orbitron',sans-serif;font-weight:700;font-size:clamp(.95rem,4vw,1.2rem)}
+#coins-val{color:var(--gold);text-shadow:0 0 12px rgba(255,201,60,.5)}
+#last-win-val{color:var(--good)}
+#level-card{flex:.7;position:relative;cursor:pointer}
+#level-val{color:var(--cyan)}
+#xp-bar{position:absolute;left:8px;right:8px;bottom:4px;height:3px;background:rgba(255,255,255,.1);border-radius:2px;overflow:hidden}
+#xp-fill{height:100%;width:0%;background:linear-gradient(90deg,var(--cyan),var(--magenta));transition:width .5s}
+
+/* ===== Jackpot strip ===== */
+#jackpot-strip{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.jp-pill{
+  border-radius:10px;padding:4px 2px 5px;text-align:center;
+  background:var(--panel);border:1px solid var(--panel-edge);
+  position:relative;overflow:hidden;
+}
+.jp-pill .jp-name{font-size:.58rem;font-weight:700;letter-spacing:.18em}
+.jp-pill .jp-val{font-family:'Orbitron',sans-serif;font-size:clamp(.6rem,2.6vw,.78rem);font-weight:700;color:var(--text)}
+.jp-grand{border-color:rgba(255,201,60,.65);box-shadow:0 0 14px rgba(255,201,60,.18);animation:grandPulse 3s ease-in-out infinite}
+.jp-grand .jp-name{color:var(--gold)}
+.jp-major .jp-name{color:var(--magenta)}
+.jp-minor .jp-name{color:var(--cyan)}
+.jp-mini .jp-name{color:var(--good)}
+@keyframes grandPulse{0%,100%{box-shadow:0 0 8px rgba(255,201,60,.15)}50%{box-shadow:0 0 22px rgba(255,201,60,.45)}}
+
+/* ===== Forge bar ===== */
+#forge-bar{
+  display:flex;align-items:center;gap:10px;background:var(--panel);
+  border:1px solid var(--panel-edge);border-radius:12px;padding:7px 10px;
+}
+#forge-track{flex:1;height:14px;background:rgba(0,0,0,.45);border-radius:8px;overflow:hidden;border:1px solid rgba(255,159,28,.3)}
+#forge-fill{
+  height:100%;width:0%;border-radius:8px;
+  background:linear-gradient(90deg,#7a2d00,var(--gold2),var(--gold));
+  background-size:200% 100%;animation:forgeFlow 2.5s linear infinite;
+  transition:width .45s ease;
+}
+@keyframes forgeFlow{to{background-position:200% 0}}
+#forge-label{font-size:.68rem;letter-spacing:.14em;color:var(--gold2);font-weight:700;white-space:nowrap}
+#forge-btn{
+  font-family:'Orbitron',sans-serif;font-size:.66rem;font-weight:700;letter-spacing:.1em;
+  background:linear-gradient(135deg,#4a2200,#191024);color:var(--dim);
+  border:1px solid rgba(255,159,28,.35);border-radius:9px;padding:6px 12px;cursor:pointer;
+}
+#forge-btn.ready{
+  color:#1a0e00;background:linear-gradient(135deg,var(--gold),var(--gold2));
+  animation:forgeReady .65s ease-in-out infinite alternate;cursor:pointer;
+}
+@keyframes forgeReady{from{box-shadow:0 0 8px rgba(255,201,60,.5)}to{box-shadow:0 0 24px rgba(255,201,60,.95);transform:scale(1.05)}}
+
+/* ===== Machine ===== */
+#machine{
+  position:relative;border-radius:18px;padding:10px;
+  background:linear-gradient(160deg,#1b1140,#0b0620 55%,#160b33);
+  border:2px solid transparent;
+  background-clip:padding-box;
+  box-shadow:0 0 0 2px rgba(139,92,246,.45),0 0 35px rgba(139,92,246,.22),inset 0 0 40px rgba(0,0,0,.6);
+}
+#machine.fs-mode{box-shadow:0 0 0 2px rgba(52,245,164,.7),0 0 45px rgba(52,245,164,.3),inset 0 0 40px rgba(0,0,0,.6)}
+#machine.anticipate{animation:anticipate .35s ease-in-out infinite alternate}
+@keyframes anticipate{from{box-shadow:0 0 0 2px rgba(255,46,196,.6),0 0 25px rgba(255,46,196,.3)}to{box-shadow:0 0 0 3px rgba(255,46,196,1),0 0 60px rgba(255,46,196,.65)}}
+
+#fs-banner{
+  display:none;justify-content:center;align-items:center;gap:14px;
+  margin-bottom:8px;padding:5px 10px;border-radius:10px;
+  background:linear-gradient(90deg,rgba(52,245,164,.16),rgba(52,245,164,.32),rgba(52,245,164,.16));
+  border:1px solid rgba(52,245,164,.55);
+  font-family:'Orbitron',sans-serif;font-weight:700;font-size:.8rem;color:var(--good);
+  animation:fsGlow .8s ease-in-out infinite alternate;
+}
+#fs-banner.on{display:flex}
+@keyframes fsGlow{from{box-shadow:0 0 6px rgba(52,245,164,.3)}to{box-shadow:0 0 20px rgba(52,245,164,.7)}}
+#fs-mult{color:var(--gold);text-shadow:0 0 10px rgba(255,201,60,.6)}
+
+#grid-wrap{position:relative}
+#grid{
+  display:grid;grid-template-columns:repeat(6,1fr);grid-template-rows:repeat(5,1fr);
+  gap:5px;aspect-ratio:6/5;
+}
+.cell{
+  display:flex;align-items:center;justify-content:center;
+  background:linear-gradient(145deg,rgba(255,255,255,.07),rgba(255,255,255,.015));
+  border:1px solid rgba(139,92,246,.22);border-radius:10px;
+  font-size:clamp(1.25rem,6.2vw,2.1rem);
+  position:relative;overflow:visible;
+  transition:background .2s;
+}
+.cell .sym{display:block;line-height:1;filter:drop-shadow(0 2px 4px rgba(0,0,0,.6))}
+.cell.drop .sym{animation:gemDrop .42s cubic-bezier(.25,.9,.4,1.15) backwards}
+@keyframes gemDrop{from{transform:translateY(-220%);opacity:.2}to{transform:translateY(0);opacity:1}}
+.cell.shatter .sym{animation:gemShatter .38s ease-in forwards}
+@keyframes gemShatter{
+  0%{transform:scale(1) rotate(0);opacity:1;filter:brightness(2.2) drop-shadow(0 0 12px #fff)}
+  100%{transform:scale(2) rotate(35deg);opacity:0}
+}
+.cell.win-glow{
+  background:linear-gradient(145deg,rgba(255,201,60,.28),rgba(255,46,196,.18));
+  border-color:var(--gold);
+  animation:cellWin .35s ease-in-out infinite alternate;
+}
+@keyframes cellWin{from{box-shadow:inset 0 0 6px rgba(255,201,60,.4)}to{box-shadow:inset 0 0 16px rgba(255,201,60,.9),0 0 12px rgba(255,201,60,.5)}}
+.cell.is-orb{border-color:rgba(0,229,255,.7);background:linear-gradient(145deg,rgba(0,229,255,.14),rgba(139,92,246,.18))}
+.cell.is-orb .sym{animation:orbPulse 1.1s ease-in-out infinite alternate}
+@keyframes orbPulse{from{filter:drop-shadow(0 0 4px var(--cyan))}to{filter:drop-shadow(0 0 14px var(--cyan)) brightness(1.4);transform:scale(1.12)}}
+.orb-tag{
+  position:absolute;bottom:2px;right:3px;font-family:'Orbitron',sans-serif;
+  font-size:clamp(.5rem,2.4vw,.72rem);font-weight:900;color:var(--cyan);
+  text-shadow:0 0 6px rgba(0,229,255,.9),0 1px 2px #000;z-index:2;
+}
+.orb-tag.huge{color:var(--gold);text-shadow:0 0 8px rgba(255,201,60,1),0 1px 2px #000}
+.cell.is-scatter{border-color:rgba(255,46,196,.8)}
+.cell.is-scatter .sym{animation:scatterSpin 2.4s linear infinite}
+@keyframes scatterSpin{0%{filter:drop-shadow(0 0 5px var(--magenta)) hue-rotate(0deg)}100%{filter:drop-shadow(0 0 12px var(--magenta)) hue-rotate(360deg)}}
+.cell.is-coin{border-color:rgba(255,201,60,.7)}
+.cell.is-coin .sym{animation:coinShine 1.4s ease-in-out infinite alternate}
+@keyframes coinShine{from{filter:drop-shadow(0 0 3px var(--gold))}to{filter:drop-shadow(0 0 12px var(--gold)) brightness(1.5)}}
+
+#tumble-badge{
+  position:absolute;top:-9px;left:8px;z-index:5;display:none;
+  font-family:'Orbitron',sans-serif;font-size:.72rem;font-weight:900;
+  background:linear-gradient(135deg,var(--magenta),var(--violet));color:#fff;
+  padding:3px 11px;border-radius:20px;letter-spacing:.08em;
+  box-shadow:0 0 14px rgba(255,46,196,.6);
+}
+#tumble-badge.on{display:block;animation:tumblePop .3s cubic-bezier(.2,1.6,.4,1)}
+@keyframes tumblePop{from{transform:scale(.3)}to{transform:scale(1)}}
+
+/* ===== Win display ===== */
+#win-display{min-height:54px;text-align:center;display:flex;flex-direction:column;justify-content:center}
+#win-message{font-size:.95rem;font-weight:700;letter-spacing:.12em;color:var(--dim);text-transform:uppercase}
+#win-amount{
+  font-family:'Orbitron',sans-serif;font-weight:900;font-size:clamp(1.2rem,6vw,1.7rem);
+  background:linear-gradient(90deg,var(--gold),#fff,var(--gold2),var(--gold));
+  background-size:200% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;
+  animation:shimmer 2s linear infinite;
+}
+@keyframes shimmer{to{background-position:200% 0}}
+/* ===== Controls ===== */
+#controls{display:flex;align-items:center;justify-content:center;gap:10px}
+#bet-block{display:flex;flex-direction:column;align-items:center;gap:4px}
+.bet-row{display:flex;align-items:center;gap:6px}
+.bet-adj{
+  width:34px;height:34px;border-radius:9px;border:1px solid var(--panel-edge);
+  background:var(--panel);color:var(--text);font-size:1.15rem;font-weight:700;cursor:pointer;
+  font-family:'Rajdhani',sans-serif;
+}
+.bet-adj:active{transform:scale(.92)}
+#bet-val{
+  font-family:'Orbitron',sans-serif;font-weight:700;font-size:.95rem;min-width:64px;text-align:center;
+  color:var(--cyan);
+}
+#ante-btn{
+  font-size:.62rem;font-weight:700;letter-spacing:.12em;padding:4px 10px;border-radius:8px;
+  background:var(--panel);border:1px solid var(--panel-edge);color:var(--dim);cursor:pointer;
+}
+#ante-btn.on{color:#1a0e00;background:linear-gradient(135deg,var(--gold),var(--gold2));border-color:var(--gold);box-shadow:0 0 12px rgba(255,201,60,.5)}
+
+#spin-btn{
+  width:108px;height:108px;border-radius:50%;border:3px solid rgba(255,255,255,.5);cursor:pointer;
+  font-family:'Orbitron',sans-serif;font-weight:900;font-size:1.05rem;letter-spacing:.1em;color:#fff;
+  background:radial-gradient(circle at 32% 28%,#c95cff,var(--violet) 45%,#3b1a8c 90%);
+  box-shadow:0 0 26px rgba(139,92,246,.6),inset 0 -6px 14px rgba(0,0,0,.4);
+  text-shadow:0 2px 6px rgba(0,0,0,.6);
+  transition:transform .12s,filter .2s;
+  flex-shrink:0;
+}
+#spin-btn:active{transform:scale(.94)}
+#spin-btn:disabled{filter:grayscale(.7) brightness(.6);cursor:default}
+#spin-btn.fs{
+  background:radial-gradient(circle at 32% 28%,#7dffce,var(--good) 45%,#0a7a4c 90%);
+  box-shadow:0 0 26px rgba(52,245,164,.7),inset 0 -6px 14px rgba(0,0,0,.4);
+  animation:fsBtn .7s ease-in-out infinite alternate;color:#03301d;text-shadow:none;
+}
+@keyframes fsBtn{from{transform:scale(1)}to{transform:scale(1.05);box-shadow:0 0 40px rgba(52,245,164,1)}}
+#spin-btn .sub{display:block;font-size:.55rem;font-weight:700;letter-spacing:.2em;opacity:.85}
+
+#side-btns{display:flex;flex-direction:column;gap:6px}
+.icon-btn{
+  width:46px;height:46px;border-radius:12px;border:1px solid var(--panel-edge);
+  background:var(--panel);color:var(--text);font-size:1.1rem;cursor:pointer;position:relative;
+}
+.icon-btn:active{transform:scale(.92)}
+.icon-btn.on{border-color:var(--cyan);box-shadow:0 0 10px rgba(0,229,255,.45);color:var(--cyan)}
+.icon-btn .tag{position:absolute;bottom:-1px;left:0;right:0;font-size:.46rem;letter-spacing:.06em;color:var(--dim);font-weight:700}
+#buy-btn{
+  border-color:rgba(255,201,60,.55);
+  background:linear-gradient(135deg,rgba(255,159,28,.22),var(--panel));
+}
+
+/* ===== Tabs / Panels ===== */
+#tabs{display:flex;gap:5px;margin-top:4px}
+.tab-btn{
+  flex:1;padding:7px 2px;border-radius:10px 10px 0 0;border:1px solid var(--panel-edge);border-bottom:none;
+  background:rgba(14,8,32,.7);color:var(--dim);font-family:'Rajdhani',sans-serif;
+  font-size:.72rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;
+}
+.tab-btn.active{background:var(--panel);color:var(--cyan);border-color:rgba(0,229,255,.4)}
+.panel{
+  display:none;background:var(--panel);border:1px solid var(--panel-edge);
+  border-radius:0 0 12px 12px;padding:12px;font-size:.85rem;
+}
+.panel.active{display:block}
+.pay-row{display:flex;justify-content:space-between;align-items:center;padding:4px 2px;border-bottom:1px solid rgba(139,92,246,.14)}
+.pay-row:last-child{border-bottom:none}
+.pay-row .pe{font-size:1.15rem;width:36px}
+.pay-row .pn{flex:1;color:var(--dim);font-weight:600}
+.pay-row .pv{font-family:'Orbitron',sans-serif;font-size:.66rem;color:var(--gold);text-align:right;line-height:1.5}
+.feature-note{margin-top:10px;padding:8px;border-radius:8px;background:rgba(0,0,0,.3);color:var(--dim);font-size:.78rem;line-height:1.45}
+.feature-note b{color:var(--cyan)}
+.stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.stat-box{background:rgba(0,0,0,.3);border-radius:8px;padding:7px 9px}
+.stat-box .sl{font-size:.6rem;letter-spacing:.16em;color:var(--dim);text-transform:uppercase}
+.stat-box .sv{font-family:'Orbitron',sans-serif;font-size:.85rem;font-weight:700;color:var(--text)}
+#achieve-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:7px}
+.achievement{
+  text-align:center;padding:8px 3px;border-radius:10px;background:rgba(0,0,0,.32);
+  border:1px solid rgba(139,92,246,.18);filter:grayscale(1);opacity:.42;
+}
+.achievement.unlocked{filter:none;opacity:1;border-color:rgba(255,201,60,.5);box-shadow:0 0 10px rgba(255,201,60,.2)}
+.achievement .ae{font-size:1.3rem}
+.achievement .an{font-size:.56rem;font-weight:700;color:var(--dim);margin-top:2px;line-height:1.2}
+.achievement.unlocked .an{color:var(--gold)}
+#history-list{display:flex;flex-direction:column;gap:4px;max-height:240px;overflow-y:auto}
+.history-item{display:flex;justify-content:space-between;padding:5px 8px;border-radius:7px;background:rgba(0,0,0,.28);font-size:.78rem}
+.history-item .hw{font-family:'Orbitron',sans-serif;font-size:.7rem}
+.history-item.win .hw{color:var(--good)}
+.history-item.loss .hw{color:var(--dim)}
+.history-item.bonus .hw{color:var(--magenta)}
+
+/* ===== Overlays ===== */
+.overlay{
+  position:fixed;inset:0;z-index:50;display:none;align-items:center;justify-content:center;
+  background:rgba(4,2,12,.86);backdrop-filter:blur(6px);padding:14px;
+}
+.overlay.active{display:flex}
+#mg-box{
+  width:min(480px,100%);max-height:92vh;overflow-y:auto;border-radius:20px;padding:18px 16px;
+  background:linear-gradient(165deg,#1d1242,#0a0522 60%,#170b36);
+  border:2px solid var(--panel-edge);
+  box-shadow:0 0 60px rgba(139,92,246,.4);
+  animation:boxIn .4s cubic-bezier(.2,1.4,.4,1);
+  text-align:center;
+}
+@keyframes boxIn{from{transform:scale(.6) rotate(-2deg);opacity:0}to{transform:scale(1) rotate(0);opacity:1}}
+#mg-title{font-family:'Orbitron',sans-serif;font-weight:900;font-size:1.25rem;letter-spacing:.1em;margin-bottom:4px;color:var(--gold)}
+#mg-sub{color:var(--dim);font-size:.82rem;margin-bottom:14px}
+.mg-btn{
+  font-family:'Rajdhani',sans-serif;font-weight:700;font-size:1rem;color:var(--text);
+  background:linear-gradient(135deg,rgba(139,92,246,.3),rgba(0,0,0,.35));
+  border:1px solid var(--panel-edge);border-radius:12px;padding:12px 18px;cursor:pointer;margin:4px;
+  transition:transform .15s;
+}
+.mg-btn:active{transform:scale(.95)}
+.mg-btn.gold{border-color:var(--gold);background:linear-gradient(135deg,rgba(255,159,28,.35),rgba(0,0,0,.3));color:var(--gold)}
+.mg-btn.pulse{animation:mgPulse 1.6s ease-in-out infinite}
+@keyframes mgPulse{0%,100%{box-shadow:0 0 4px rgba(139,92,246,.3)}50%{box-shadow:0 0 18px rgba(139,92,246,.8);border-color:var(--cyan)}}
+
+/* Boon picker */
+.boon-card{
+  width:100%;display:flex;align-items:center;gap:12px;text-align:left;
+  background:linear-gradient(135deg,rgba(255,159,28,.14),rgba(0,0,0,.4));
+  border:1px solid rgba(255,201,60,.4);border-radius:14px;padding:12px;cursor:pointer;margin:5px 0;
+  color:var(--text);font-family:'Rajdhani',sans-serif;
+  animation:mgPulse 1.8s ease-in-out infinite;
+}
+.boon-card .be{font-size:1.9rem}
+.boon-card .bn{font-weight:700;font-size:1rem;color:var(--gold)}
+.boon-card .bd{font-size:.78rem;color:var(--dim)}
+
+/* Gem Mine */
+#mine-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin:10px 0}
+.mine-tile{
+  aspect-ratio:1;border-radius:11px;font-size:1.5rem;cursor:pointer;
+  background:linear-gradient(145deg,#3a2a14,#1c1208);border:1px solid rgba(255,159,28,.4);
+  color:var(--text);transition:transform .15s;
+}
+.mine-tile:not(.revealed):active{transform:scale(.92)}
+.mine-tile.revealed{background:linear-gradient(145deg,rgba(139,92,246,.25),rgba(0,0,0,.5));cursor:default;animation:tileFlip .35s ease}
+.mine-tile.cavein{background:linear-gradient(145deg,#4a1020,#200408);border-color:var(--danger)}
+@keyframes tileFlip{from{transform:rotateY(90deg) scale(.8)}to{transform:rotateY(0) scale(1)}}
+#mine-total{font-family:'Orbitron',sans-serif;font-size:1.2rem;color:var(--gold);margin:6px 0}
+
+/* Crystal Wheel */
+#wheel-wrap{position:relative;width:min(300px,78vw);margin:8px auto}
+#wheel-svg{width:100%;display:block;filter:drop-shadow(0 0 18px rgba(139,92,246,.5))}
+#wheel-pointer{
+  position:absolute;top:-12px;left:50%;transform:translateX(-50%);z-index:3;
+  width:0;height:0;border-left:13px solid transparent;border-right:13px solid transparent;
+  border-top:24px solid var(--gold);filter:drop-shadow(0 0 6px rgba(255,201,60,.8));
+}
+#wheel-rotor{transform-origin:50% 50%}
+
+/* Gem Cutter */
+#cutter-track{
+  position:relative;height:34px;border-radius:18px;margin:14px 0;overflow:hidden;
+  background:linear-gradient(90deg,#3a1020 0%,#7a4a00 32%,var(--good) 47%,#34F5A4 53%,#7a4a00 68%,#3a1020 100%);
+  border:1px solid var(--panel-edge);
+}
+#cutter-needle{
+  position:absolute;top:0;bottom:0;width:4px;background:#fff;left:0;
+  box-shadow:0 0 10px #fff;border-radius:2px;
+}
+#cutter-gem{font-size:3.4rem;margin:6px 0;filter:drop-shadow(0 0 16px rgba(0,229,255,.6))}
+
+/* Hold & Win */
+#hw-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:5px;margin:10px 0;aspect-ratio:6/5}
+.hw-cell{
+  border-radius:9px;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  background:rgba(0,0,0,.5);border:1px solid rgba(255,201,60,.18);
+  font-size:clamp(.9rem,4.4vw,1.4rem);position:relative;
+}
+.hw-cell.locked{
+  background:radial-gradient(circle at 35% 30%,rgba(255,201,60,.4),rgba(122,74,0,.45));
+  border-color:var(--gold);animation:hwLock .3s cubic-bezier(.2,1.5,.4,1);
+}
+@keyframes hwLock{from{transform:scale(.3)}to{transform:scale(1)}}
+.hw-cell .hv{font-family:'Orbitron',sans-serif;font-size:clamp(.44rem,2.1vw,.62rem);font-weight:900;color:#fff;text-shadow:0 1px 2px #000}
+.hw-cell .hv.jp{color:var(--magenta)}
+#hw-spins-row{display:flex;justify-content:center;gap:8px;margin:6px 0}
+.hw-spin-dot{width:14px;height:14px;border-radius:50%;background:rgba(255,255,255,.12);border:1px solid var(--panel-edge)}
+.hw-spin-dot.lit{background:var(--gold);box-shadow:0 0 10px rgba(255,201,60,.8)}
+
+/* Big Win */
+#bigwin-overlay{
+  position:fixed;inset:0;z-index:80;display:none;flex-direction:column;align-items:center;justify-content:center;
+  background:radial-gradient(circle,rgba(20,8,50,.88),rgba(4,2,12,.96));backdrop-filter:blur(4px);
+}
+#bigwin-overlay.active{display:flex}
+#bigwin-tier{
+  font-family:'Orbitron',sans-serif;font-weight:900;font-size:clamp(2.2rem,12vw,4.2rem);letter-spacing:.08em;
+  background:linear-gradient(180deg,#fff,var(--gold) 55%,var(--gold2));
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+  filter:drop-shadow(0 0 26px rgba(255,201,60,.8));
+  animation:bigwinPop .5s cubic-bezier(.2,1.7,.4,1);
+}
+@keyframes bigwinPop{from{transform:scale(.2) rotate(-7deg);opacity:0}to{transform:scale(1) rotate(0);opacity:1}}
+#bigwin-amount{
+  font-family:'Orbitron',sans-serif;font-weight:900;font-size:clamp(1.8rem,10vw,3.2rem);color:#fff;
+  text-shadow:0 0 24px rgba(0,229,255,.8);margin-top:10px;
+}
+#bigwin-tap{margin-top:26px;color:var(--dim);font-size:.8rem;letter-spacing:.3em;animation:fadeBlink 1.4s ease-in-out infinite}
+@keyframes fadeBlink{0%,100%{opacity:.3}50%{opacity:1}}
+
+/* Toast + misc */
+#toast{
+  position:fixed;top:14px;right:14px;z-index:90;max-width:300px;
+  background:linear-gradient(135deg,#241454,#120a2e);border:1px solid var(--cyan);
+  border-radius:12px;padding:11px 15px;font-size:.85rem;font-weight:600;
+  box-shadow:0 0 24px rgba(0,229,255,.35);
+  transform:translateX(130%);transition:transform .4s cubic-bezier(.2,1.2,.4,1);
+}
+#toast.show{transform:translateX(0)}
+#particles{position:fixed;inset:0;z-index:70;pointer-events:none}
+#shake-root.shake{animation:screenShake .45s ease}
+@keyframes screenShake{
+  0%,100%{transform:translate(0,0)}15%{transform:translate(-7px,4px)}30%{transform:translate(6px,-5px)}
+  45%{transform:translate(-5px,-3px)}60%{transform:translate(5px,4px)}75%{transform:translate(-3px,2px)}
+}
+#version-footer{margin-top:8px;text-align:center;font-size:.72rem;color:var(--dim)}
+#version-footer summary{cursor:pointer;letter-spacing:.1em}
+#changelog{text-align:left;padding:8px 12px;background:rgba(0,0,0,.3);border-radius:8px;margin-top:6px;line-height:1.7}
+#changelog b{color:var(--cyan)}
+
+@media (max-width:480px){
+  #spin-btn{width:94px;height:94px;font-size:.92rem}
+  .icon-btn{width:42px;height:42px}
+  #toast{top:auto;bottom:18px;right:50%;transform:translate(50%,150%)}
+  #toast.show{transform:translate(50%,0)}
+}
+@media (max-width:480px) and (max-height:700px){
+  #subtitle{display:none}
+  #app{gap:6px}
+  .cell{font-size:clamp(1.1rem,5.6vw,1.7rem)}
+}
+</style>
+</head>
+<body>
+<div id="aurora"></div>
+<canvas id="stars"></canvas>
+<div id="shake-root">
+<div id="app">
+
+  <header id="header">
+    <h1 id="logo">PRISMFALL</h1>
+    <div id="subtitle">Gem Cascade Casino</div>
+  </header>
+
+  <div id="top-row">
+    <div class="hud-card" id="level-card" title="Player level">
+      <div class="lbl">Level</div>
+      <div class="val" id="level-val">1</div>
+      <div id="xp-bar"><div id="xp-fill"></div></div>
+    </div>
+    <div class="hud-card">
+      <div class="lbl">Gems</div>
+      <div class="val" id="coins-val">5,000</div>
+    </div>
+    <div class="hud-card">
+      <div class="lbl">Last Win</div>
+      <div class="val" id="last-win-val">—</div>
+    </div>
+  </div>
+
+  <div id="jackpot-strip">
+    <div class="jp-pill jp-grand"><div class="jp-name">GRAND</div><div class="jp-val" id="jp-grand-val">100,000</div></div>
+    <div class="jp-pill jp-major"><div class="jp-name">MAJOR</div><div class="jp-val" id="jp-major-val">12,500</div></div>
+    <div class="jp-pill jp-minor"><div class="jp-name">MINOR</div><div class="jp-val" id="jp-minor-val">2,500</div></div>
+    <div class="jp-pill jp-mini"><div class="jp-name">MINI</div><div class="jp-val" id="jp-mini-val">500</div></div>
+  </div>
+
+  <div id="forge-bar">
+    <span id="forge-label">⛏️ FORGE</span>
+    <div id="forge-track"><div id="forge-fill"></div></div>
+    <button id="forge-btn">SMELT</button>
+  </div>
+
+  <div id="machine">
+    <div id="fs-banner"><span>✨ FREE SPINS <span id="fs-count">0</span></span><span id="fs-mult">×0</span></div>
+    <div id="grid-wrap">
+      <div id="tumble-badge">TUMBLE ×1</div>
+      <div id="grid"></div>
+    </div>
+  </div>
+
+  <div id="win-display">
+    <div id="win-message">Match 8+ gems anywhere — wins tumble!</div>
+    <div id="win-amount"></div>
+  </div>
+
+  <div id="controls">
+    <div id="bet-block">
+      <div class="bet-row">
+        <button class="bet-adj" id="bet-down">−</button>
+        <div id="bet-val">50</div>
+        <button class="bet-adj" id="bet-up">+</button>
+      </div>
+      <button id="ante-btn">ANTE ×1.25</button>
+    </div>
+    <button id="spin-btn">SPIN<span class="sub">HOLD A LUCKY GEM</span></button>
+    <div id="side-btns">
+      <button class="icon-btn" id="auto-btn" title="Auto spin">♻️<span class="tag">AUTO</span></button>
+      <button class="icon-btn" id="turbo-btn" title="Turbo mode">⚡<span class="tag">TURBO</span></button>
+      <button class="icon-btn" id="buy-btn" title="Buy bonus">🛒<span class="tag">BUY</span></button>
+      <button class="icon-btn on" id="sound-btn" title="Sound">🔊<span class="tag">SOUND</span></button>
+    </div>
+  </div>
+
+  <div id="tabs">
+    <button class="tab-btn active" data-tab="pay">Pays</button>
+    <button class="tab-btn" data-tab="stats">Stats</button>
+    <button class="tab-btn" data-tab="achieve">Awards</button>
+    <button class="tab-btn" data-tab="history">History</button>
+  </div>
+  <div class="panel active" id="panel-pay"></div>
+  <div class="panel" id="panel-stats"></div>
+  <div class="panel" id="panel-achieve"><div id="achieve-grid"></div></div>
+  <div class="panel" id="panel-history"><div id="history-list"></div></div>
+
+  <details id="version-footer">
+    <summary>v1.0 · PRISMFALL — Gem Cascade Casino</summary>
+    <div id="changelog">
+      <b>v1.0</b> — Initial release: 6×5 scatter-pays cascade engine, charged-gem multipliers up to ×500, free spins with accumulating multiplier, Lightning Hold &amp; Win with 4 progressive jackpots, the Gem Forge boon system, Gem Mine / Crystal Wheel / Gem Cutter mini-games, bonus buy, ante bet, XP levels, 24 achievements, daily wheel, synthesized soundtrack.<br>
+    </div>
+  </details>
+
+</div>
+</div>
+
+<div class="overlay" id="mg-overlay"><div id="mg-box">
+  <div id="mg-title"></div>
+  <div id="mg-sub"></div>
+  <div id="mg-body"></div>
+</div></div>
+
+<div id="bigwin-overlay">
+  <div id="bigwin-tier">BIG WIN</div>
+  <div id="bigwin-amount">0</div>
+  <div id="bigwin-tap">TAP TO COLLECT</div>
+</div>
+
+<div id="toast"></div>
+<canvas id="particles"></canvas>
+
+<script>
+'use strict';
+/* ============================================================
+   PRISMFALL — Gem Cascade Casino
+   6×5 scatter-pays tumble engine · charged multiplier gems ·
+   free spins · Hold & Win jackpots · Gem Forge · mini-games
+   ============================================================ */
+
+const COLS = 6, ROWS = 5, CELLS = COLS * ROWS;
+const SAVE_KEY = 'prismfall_v1';
+const BETS = [10, 25, 50, 100, 250, 500, 1000, 2500];
+
+/* Paying symbols. pays = win multiple of total bet at 8-9 / 10-11 / 12+ matches */
+const SYMBOLS = [
+  { id:'crown',   e:'👑', name:'Crown Jewel',   w:2,  pays:[10, 25, 50] },
+  { id:'diamond', e:'💎', name:'Diamond',        w:3,  pays:[5, 12, 25] },
+  { id:'orbgem',  e:'🔮', name:'Mystic Amethyst',w:4,  pays:[2.5, 8, 15] },
+  { id:'eye',     e:'🧿', name:'Sapphire Eye',   w:5,  pays:[2, 5, 10] },
+  { id:'amber',   e:'🔶', name:'Amber Gem',      w:7,  pays:[1.5, 3, 6] },
+  { id:'topaz',   e:'🔷', name:'Royal Topaz',    w:7,  pays:[1.2, 2.5, 5] },
+  { id:'aqua',    e:'💠', name:'Aquamarine',     w:8,  pays:[1, 2, 4] },
+  { id:'ruby',    e:'🔺', name:'Ruby Shard',     w:10, pays:[0.6, 1.5, 3] },
+  { id:'emerald', e:'🟢', name:'Emerald Chip',   w:10, pays:[0.5, 1.2, 2.5] },
+  { id:'garnet',  e:'🔻', name:'Garnet Shard',   w:11, pays:[0.4, 1, 2] },
+];
+const SPECIALS = {
+  scatter: { id:'scatter', e:'🌈', name:'Prism Scatter' },
+  charge:  { id:'charge',  e:'⚡', name:'Charged Gem' },
+  coin:    { id:'coin',    e:'🪙', name:'Gold Nugget' },
+};
+const BASE_SCATTER_W = 2.0, BASE_CHARGE_W = 1.05, BASE_COIN_W = 4.0;
+
+/* Charged Gem multiplier table: [value, weight] */
+const CHARGE_VALUES = [
+  [2,30],[3,20],[4,15],[5,10],[6,8],[8,6],[10,5],[12,3.4],[15,3],
+  [20,2.4],[25,1.8],[50,1],[100,.5],[250,.2],[500,.08]
+];
+/* Hold & Win coin values (× bet) plus jackpot coins */
+const HW_VALUES = [
+  ['0.5',22],['1',20],['1.5',14],['2',12],['3',9],['5',6],['8',3.5],['10',2],['15',1],
+  ['MINI',1.6],['MINOR',.8],['MAJOR',.3]
+];
+const JP_SEED = { grand:100000, major:12500, minor:2500, mini:500 };
+const FORGE_CAP = 150;
+
+const ACHIEVEMENTS = [
+  { id:'first_spin',   e:'🎰', n:'First Spin',      d:'Spin the reels once' },
+  { id:'first_tumble', e:'🌊', n:'Chain Reaction',  d:'Hit a 3+ tumble chain' },
+  { id:'chain6',       e:'⛓️', n:'Cascade Master',  d:'Hit a 6+ tumble chain' },
+  { id:'chain10',      e:'🌀', n:'Singularity',     d:'Hit a 10+ tumble chain' },
+  { id:'win50',        e:'💰', n:'High Roller',     d:'Win 50× your bet' },
+  { id:'win100',       e:'🤑', n:'Gem Baron',       d:'Win 100× your bet' },
+  { id:'legendary',    e:'🏆', n:'Legendary',       d:'Land a LEGENDARY win (150×+)' },
+  { id:'fs_trigger',   e:'🌈', n:'Prism Break',     d:'Trigger free spins' },
+  { id:'scatter6',     e:'🎆', n:'Full Spectrum',   d:'Land 6+ scatters at once' },
+  { id:'hw_trigger',   e:'⚡', n:'Lightning Rod',   d:'Trigger Hold & Win' },
+  { id:'jackpot',      e:'🎯', n:'Jackpot!',        d:'Win any jackpot' },
+  { id:'grand',        e:'👑', n:'THE GRAND',       d:'Win the GRAND jackpot' },
+  { id:'forge1',       e:'⛏️', n:'Forgemaster',     d:'Smelt your first boon' },
+  { id:'forge10',      e:'🔥', n:'Eternal Flame',   d:'Smelt 10 boons' },
+  { id:'mine_clean',   e:'💪', n:'Deep Delver',     d:'Clear Gem Mine without a cave-in' },
+  { id:'cut_perfect',  e:'✂️', n:'Master Cutter',   d:'Score a PERFECT gem cut' },
+  { id:'crown12',      e:'💍', n:'Royal Flush',     d:'Land 12+ Crown Jewels at once' },
+  { id:'orb100',       e:'☄️', n:'Supercharged',    d:'Land a ×100 or bigger Charged Gem' },
+  { id:'buy_bonus',    e:'🛒', n:'Whale Mode',      d:'Buy a bonus' },
+  { id:'max_bet',      e:'🎲', n:'All In',          d:'Spin at max bet' },
+  { id:'level5',       e:'⭐', n:'Rising Star',     d:'Reach level 5' },
+  { id:'level10',      e:'🌟', n:'Constellation',   d:'Reach level 10' },
+  { id:'spins1000',    e:'🔁', n:'Marathon',        d:'Play 1,000 spins' },
+  { id:'daily5',       e:'📅', n:'Regular',         d:'Claim 5 daily wheels' },
+];
+
+const BOONS = [
+  { id:'vault',  e:'💰', n:'Coin Vault',     d:'Instantly crack a vault of 10–25× bet' },
+  { id:'charged',e:'⚡', n:'Charged Spins',  d:'Next 5 spins land 2+ extra Charged Gems' },
+  { id:'prism',  e:'🌈', n:'Prism Surge',    d:'8 free spins, right now' },
+  { id:'rush',   e:'🪙', n:'Golden Rush',    d:'Hold & Win with 8 coins pre-locked' },
+  { id:'mine',   e:'⛏️', n:'Gem Mine',       d:'Delve the push-your-luck mine' },
+  { id:'wheel',  e:'🎡', n:'Crystal Wheel',  d:'Spin the two-tier Crystal Wheel' },
+  { id:'cutter', e:'✂️', n:'Raw Gem',        d:'Cut a raw gem — skill pays up to ×25' },
+];
+
+/* ---------- State ---------- */
+const state = {
+  coins: 5000, betIdx: 2, ante: false,
+  level: 1, xp: 0,
+  forge: 0, forgeCount: 0, chargedSpins: 0,
+  jp: { ...JP_SEED },
+  fs: 0, fsTotal: 0, fsMult: 0,
+  achievements: {}, dailyClaims: 0, lastDaily: 0,
+  stats: { spins: 0, wagered: 0, won: 0, biggestWin: 0, biggestChain: 0, bonuses: 0, jackpots: 0 },
+  history: [],
+  sound: true, turbo: false,
+};
+let grid = [];           // CELLS entries: {sym, orbVal?} or null
+let spinning = false;
+let autoSpin = false;
+let lastWin = 0;
+
+function save() {
+  try { localStorage.setItem(SAVE_KEY, JSON.stringify(state)); } catch (e) {}
+}
+function load() {
+  try {
+    const raw = localStorage.getItem(SAVE_KEY);
+    if (!raw) return;
+    const d = JSON.parse(raw);
+    Object.assign(state, d);
+    state.jp = Object.assign({ ...JP_SEED }, d.jp);
+    state.stats = Object.assign(state.stats, d.stats);
+  } catch (e) {}
+}
+
+/* ---------- Helpers ---------- */
+const $ = id => document.getElementById(id);
+const fmt = n => Math.floor(n).toLocaleString('en-US');
+const rand = (a, b) => a + Math.random() * (b - a);
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+const speed = ms => state.turbo ? Math.max(40, ms * 0.35) : ms;
+function weightedPick(pairs) {
+  let total = 0; for (const [, w] of pairs) total += w;
+  let r = Math.random() * total;
+  for (const [v, w] of pairs) { r -= w; if (r <= 0) return v; }
+  return pairs[pairs.length - 1][0];
+}
+function bet() { return BETS[state.betIdx]; }
+function betCost() { return Math.round(bet() * (state.ante ? 1.25 : 1)); }
+
+/* ---------- Audio engine (WebAudio, fully synthesized) ---------- */
+let AC = null;
+function audio() {
+  if (!AC) { try { AC = new (window.AudioContext || window.webkitAudioContext)(); } catch (e) {} }
+  if (AC && AC.state === 'suspended') AC.resume();
+  return AC;
+}
+function tone(freq, dur = .15, type = 'sine', vol = .14, when = 0, slide = 0) {
+  if (!state.sound) return; const ac = audio(); if (!ac) return;
+  const t = ac.currentTime + when;
+  const o = ac.createOscillator(), g = ac.createGain();
+  o.type = type; o.frequency.setValueAtTime(freq, t);
+  if (slide) o.frequency.exponentialRampToValueAtTime(Math.max(20, freq + slide), t + dur);
+  g.gain.setValueAtTime(vol, t);
+  g.gain.exponentialRampToValueAtTime(.0001, t + dur);
+  o.connect(g); g.connect(ac.destination);
+  o.start(t); o.stop(t + dur + .02);
+}
+function noiseBurst(dur = .2, vol = .12, when = 0, hp = 1200) {
+  if (!state.sound) return; const ac = audio(); if (!ac) return;
+  const t = ac.currentTime + when;
+  const len = Math.floor(ac.sampleRate * dur);
+  const buf = ac.createBuffer(1, len, ac.sampleRate);
+  const ch = buf.getChannelData(0);
+  for (let i = 0; i < len; i++) ch[i] = (Math.random() * 2 - 1) * (1 - i / len);
+  const src = ac.createBufferSource(); src.buffer = buf;
+  const f = ac.createBiquadFilter(); f.type = 'highpass'; f.frequency.value = hp;
+  const g = ac.createGain(); g.gain.setValueAtTime(vol, t);
+  g.gain.exponentialRampToValueAtTime(.0001, t + dur);
+  src.connect(f); f.connect(g); g.connect(ac.destination);
+  src.start(t);
+}
+const SFX = {
+  click()   { tone(620, .06, 'square', .07); },
+  spin()    { noiseBurst(.4, .07, 0, 500); tone(180, .35, 'sawtooth', .05, 0, 240); },
+  drop()    { tone(190, .07, 'triangle', .08); },
+  shatter(chain) {
+    const base = 520 + chain * 90;
+    noiseBurst(.18, .1, 0, 2400);
+    tone(base, .22, 'sine', .12); tone(base * 1.5, .22, 'sine', .09, .04); tone(base * 2, .3, 'sine', .07, .08);
+  },
+  orb()     { tone(880, .3, 'sine', .12, 0, 660); tone(1320, .35, 'sine', .08, .07); },
+  scatter() { tone(740, .2, 'triangle', .12); tone(988, .24, 'triangle', .11, .1); tone(1318, .3, 'triangle', .1, .2); },
+  riser()   { tone(220, 1.1, 'sawtooth', .08, 0, 660); noiseBurst(1.1, .04, 0, 800); },
+  coin()    { tone(1100, .1, 'square', .07); tone(1500, .14, 'square', .06, .06); },
+  lock()    { tone(330, .12, 'square', .1); tone(495, .14, 'square', .08, .05); },
+  win()     { [523, 659, 784, 1047].forEach((f, i) => tone(f, .25, 'triangle', .12, i * .09)); },
+  bigwin()  { [392, 523, 659, 784, 1047, 1319, 1568].forEach((f, i) => { tone(f, .4, 'triangle', .13, i * .11); tone(f / 2, .4, 'sine', .08, i * .11); }); },
+  jackpot() { for (let i = 0; i < 12; i++) tone(523 * Math.pow(1.122, i % 8), .3, 'triangle', .11, i * .08); noiseBurst(.8, .06, 0, 3000); },
+  lose()    { tone(294, .25, 'sawtooth', .06, 0, -90); },
+  tick()    { tone(1800, .03, 'square', .05); },
+  forge()   { tone(140, .3, 'sawtooth', .12, 0, 60); noiseBurst(.25, .12, .05, 600); tone(880, .4, 'sine', .1, .2, 440); },
+};
+
+/* ---------- Toast & particles ---------- */
+let toastTimer = null;
+function toast(msg) {
+  const t = $('toast'); t.innerHTML = msg; t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 3200);
+}
+const pCanvas = $('particles'), pCtx = pCanvas.getContext('2d');
+let particles = [];
+function sizeCanvases() {
+  pCanvas.width = innerWidth; pCanvas.height = innerHeight;
+  const s = $('stars'); s.width = innerWidth; s.height = innerHeight; drawStars();
+}
+function drawStars() {
+  const s = $('stars'), c = s.getContext('2d');
+  c.clearRect(0, 0, s.width, s.height);
+  for (let i = 0; i < 90; i++) {
+    c.fillStyle = `rgba(${180 + Math.random() * 75},${180 + Math.random() * 75},255,${rand(.08, .4)})`;
+    c.beginPath(); c.arc(Math.random() * s.width, Math.random() * s.height, rand(.4, 1.6), 0, 7); c.fill();
+  }
+}
+function burst(x, y, colors, n = 18, power = 5) {
+  for (let i = 0; i < n; i++) {
+    const a = Math.random() * Math.PI * 2, v = rand(1, power);
+    particles.push({ x, y, vx: Math.cos(a) * v, vy: Math.sin(a) * v - 2, life: 1,
+      decay: rand(.012, .03), size: rand(2, 5.5), color: colors[Math.floor(Math.random() * colors.length)] });
+  }
+}
+function coinShower(n = 60) {
+  for (let i = 0; i < n; i++) {
+    particles.push({ x: Math.random() * innerWidth, y: -20 - Math.random() * innerHeight * .6,
+      vx: rand(-.8, .8), vy: rand(2, 5), life: 1, decay: rand(.004, .009),
+      size: rand(4, 8), color: ['#FFC93C', '#FF9F1C', '#FFE08A', '#fff'][Math.floor(Math.random() * 4)] });
+  }
+}
+function particleLoop() {
+  pCtx.clearRect(0, 0, pCanvas.width, pCanvas.height);
+  particles = particles.filter(p => p.life > 0);
+  for (const p of particles) {
+    p.x += p.vx; p.y += p.vy; p.vy += .12; p.life -= p.decay;
+    pCtx.globalAlpha = Math.max(0, p.life);
+    pCtx.fillStyle = p.color;
+    pCtx.beginPath(); pCtx.arc(p.x, p.y, Math.max(.1, p.size * p.life), 0, 7); pCtx.fill();
+  }
+  pCtx.globalAlpha = 1;
+  requestAnimationFrame(particleLoop);
+}
+function cellCenter(i) {
+  const el = $('grid').children[i];
+  if (!el) return { x: innerWidth / 2, y: innerHeight / 2 };
+  const r = el.getBoundingClientRect();
+  return { x: r.left + r.width / 2, y: r.top + r.height / 2 };
+}
+const WIN_COLORS = ['#FFC93C', '#00E5FF', '#FF2EC4', '#8B5CF6', '#fff'];
+/* ============================================================
+   GRID ENGINE — fill, render, evaluate, tumble
+   ============================================================ */
+function symbolWeights() {
+  const pairs = SYMBOLS.map(s => [s, s.w]);
+  const anteBoost = state.ante ? 1.5 : 1;
+  pairs.push([SPECIALS.scatter, BASE_SCATTER_W * anteBoost]);
+  pairs.push([SPECIALS.coin, BASE_COIN_W * (state.ante ? 1.25 : 1)]);
+  pairs.push([SPECIALS.charge, BASE_CHARGE_W]);
+  return pairs;
+}
+function newCell() {
+  const sym = weightedPick(symbolWeights());
+  const cell = { sym };
+  if (sym.id === 'charge') cell.orbVal = weightedPick(CHARGE_VALUES);
+  return cell;
+}
+function fillGrid() {
+  grid = Array.from({ length: CELLS }, newCell);
+  if (state.chargedSpins > 0) {
+    // guarantee 2 extra charged gems on boosted spins
+    for (let k = 0; k < 2; k++) {
+      const i = Math.floor(Math.random() * CELLS);
+      grid[i] = { sym: SPECIALS.charge, orbVal: weightedPick(CHARGE_VALUES) };
+    }
+  }
+}
+function renderGrid(dropAll = false, dropMask = null) {
+  const g = $('grid');
+  g.innerHTML = '';
+  for (let i = 0; i < CELLS; i++) {
+    const c = grid[i];
+    const div = document.createElement('div');
+    div.className = 'cell';
+    if (c) {
+      const col = i % COLS;
+      if (dropAll || (dropMask && dropMask[i])) {
+        div.classList.add('drop');
+        const span = document.createElement('span');
+        span.className = 'sym'; span.textContent = c.sym.e;
+        span.style.animationDelay = (dropAll ? col * 55 + Math.random() * 60 : Math.random() * 90) + 'ms';
+        div.appendChild(span);
+      } else {
+        div.innerHTML = `<span class="sym">${c.sym.e}</span>`;
+      }
+      if (c.sym.id === 'charge') {
+        div.classList.add('is-orb');
+        const tag = document.createElement('span');
+        tag.className = 'orb-tag' + (c.orbVal >= 50 ? ' huge' : '');
+        tag.textContent = '×' + c.orbVal;
+        div.appendChild(tag);
+      }
+      if (c.sym.id === 'scatter') div.classList.add('is-scatter');
+      if (c.sym.id === 'coin') div.classList.add('is-coin');
+    }
+    g.appendChild(div);
+  }
+}
+function countSym(id) { return grid.reduce((n, c) => n + (c && c.sym.id === id ? 1 : 0), 0); }
+function evaluateClusters() {
+  const counts = {};
+  grid.forEach((c, i) => {
+    if (!c) return;
+    (counts[c.sym.id] = counts[c.sym.id] || []).push(i);
+  });
+  const wins = [];
+  for (const s of SYMBOLS) {
+    const idxs = counts[s.id] || [];
+    if (idxs.length >= 8) {
+      const tier = idxs.length >= 12 ? 2 : idxs.length >= 10 ? 1 : 0;
+      wins.push({ sym: s, cells: idxs, pay: s.pays[tier] * bet(), count: idxs.length });
+    }
+  }
+  return wins;
+}
+function tumbleDown() {
+  const mask = new Array(CELLS).fill(false);
+  for (let col = 0; col < COLS; col++) {
+    const stack = [];
+    for (let row = ROWS - 1; row >= 0; row--) {
+      const i = row * COLS + col;
+      if (grid[i]) stack.push(grid[i]);
+    }
+    for (let row = ROWS - 1; row >= 0; row--) {
+      const i = row * COLS + col;
+      const fromStack = stack.shift();
+      if (fromStack) { grid[i] = fromStack; }
+      else { grid[i] = newCell(); mask[i] = true; }
+    }
+  }
+  return mask;
+}
+
+/* ============================================================
+   SPIN LOOP
+   ============================================================ */
+async function doSpin(opts = {}) {
+  if (spinning) return;
+  const isFree = state.fs > 0;
+  const cost = isFree || opts.free ? 0 : betCost();
+  if (!isFree && state.coins < cost) { toast('💸 Not enough gems! Claim the daily wheel or wait for a boon.'); autoSpin = false; updateUI(); return; }
+  spinning = true;
+  SFX.spin();
+  $('win-message').textContent = isFree ? 'FREE SPIN' : 'Cascading…';
+  $('win-amount').textContent = '';
+  $('tumble-badge').classList.remove('on');
+
+  if (!isFree) {
+    state.coins -= cost;
+    state.stats.wagered += cost;
+    // progressive jackpot growth
+    state.jp.mini  += cost * .003; state.jp.minor += cost * .004;
+    state.jp.major += cost * .005; state.jp.grand += cost * .008;
+    gainXP(Math.max(1, cost / 10));
+    if (state.betIdx === BETS.length - 1) unlock('max_bet');
+    if (state.chargedSpins > 0) state.chargedSpins--;
+  } else {
+    state.fs--;
+  }
+  state.stats.spins++;
+  if (state.stats.spins === 1) unlock('first_spin');
+  if (state.stats.spins >= 1000) unlock('spins1000');
+  updateUI();
+
+  fillGrid();
+  // random meteor shower event (base game only)
+  if (!isFree && Math.random() < 1 / 45) {
+    await sleep(speed(120));
+    const n = 1 + Math.floor(Math.random() * 3);
+    for (let k = 0; k < n; k++) {
+      const i = Math.floor(Math.random() * CELLS);
+      grid[i] = { sym: SPECIALS.charge, orbVal: weightedPick(CHARGE_VALUES) };
+    }
+    toast('☄️ METEOR SHOWER — Charged Gems rain down!');
+  }
+  renderGrid(true);
+  for (let c = 0; c < COLS; c++) setTimeout(() => SFX.drop(), speed(55) * c);
+  await sleep(speed(520));
+
+  // scatter anticipation
+  let scatters = countSym('scatter');
+  if (scatters === 3) {
+    $('machine').classList.add('anticipate');
+    SFX.riser();
+    await sleep(speed(1300));
+    $('machine').classList.remove('anticipate');
+  }
+
+  // ---- tumble loop ----
+  let tumbleWin = 0, chain = 0;
+  while (true) {
+    const wins = evaluateClusters();
+    if (!wins.length) break;
+    chain++;
+    $('tumble-badge').textContent = 'TUMBLE ×' + chain;
+    $('tumble-badge').classList.add('on');
+    if (chain >= 3) unlock('first_tumble');
+    if (chain >= 6) unlock('chain6');
+    if (chain >= 10) unlock('chain10');
+    state.stats.biggestChain = Math.max(state.stats.biggestChain, chain);
+
+    const cellsToShatter = new Set();
+    for (const w of wins) {
+      tumbleWin += w.pay;
+      w.cells.forEach(i => cellsToShatter.add(i));
+      if (w.sym.id === 'crown' && w.count >= 12) unlock('crown12');
+    }
+    // glow then shatter
+    const gridEl = $('grid');
+    cellsToShatter.forEach(i => gridEl.children[i].classList.add('win-glow'));
+    $('win-message').textContent = wins.map(w => `${w.count}× ${w.sym.e}`).join('  ');
+    $('win-amount').textContent = '+' + fmt(tumbleWin);
+    await sleep(speed(420));
+    SFX.shatter(chain);
+    cellsToShatter.forEach(i => {
+      gridEl.children[i].classList.remove('win-glow');
+      gridEl.children[i].classList.add('shatter');
+      const { x, y } = cellCenter(i);
+      burst(x, y, WIN_COLORS, 8, 4);
+    });
+    state.forge = Math.min(FORGE_CAP, state.forge + cellsToShatter.size);
+    updateForge();
+    await sleep(speed(360));
+    cellsToShatter.forEach(i => { grid[i] = null; });
+    const mask = tumbleDown();
+    renderGrid(false, mask);
+    SFX.drop();
+    await sleep(speed(420));
+  }
+
+  // ---- charged gem multipliers ----
+  let totalWin = tumbleWin;
+  const orbs = [];
+  grid.forEach((c, i) => { if (c && c.sym.id === 'charge') orbs.push({ i, v: c.orbVal }); });
+  const orbSum = orbs.reduce((s, o) => s + o.v, 0);
+  if (orbs.some(o => o.v >= 100)) unlock('orb100');
+  if (tumbleWin > 0 && orbSum > 0) {
+    for (const o of orbs) {
+      $('grid').children[o.i].classList.add('win-glow');
+      SFX.orb();
+      const { x, y } = cellCenter(o.i);
+      burst(x, y, ['#00E5FF', '#8B5CF6', '#fff'], 14, 6);
+      await sleep(speed(330));
+    }
+    if (isFree) {
+      state.fsMult += orbSum;
+      totalWin = tumbleWin * state.fsMult;
+      $('fs-mult').textContent = '×' + state.fsMult;
+      toast(`⚡ +×${orbSum} → total multiplier ×${state.fsMult}!`);
+    } else {
+      totalWin = tumbleWin * orbSum;
+      toast(`⚡ Charged Gems multiply your win ×${orbSum}!`);
+    }
+  } else if (isFree && tumbleWin > 0 && state.fsMult > 0) {
+    totalWin = tumbleWin * state.fsMult;
+  }
+
+  // ---- scatter pays & free spins trigger ----
+  scatters = countSym('scatter');
+  if (scatters >= 4) {
+    const scatPay = (scatters >= 6 ? 100 : scatters === 5 ? 5 : 3) * bet();
+    totalWin += scatPay;
+    if (scatters >= 6) unlock('scatter6');
+  }
+  if (scatters >= 3) SFX.scatter();
+
+  // ---- settle ----
+  if (totalWin > 0) {
+    state.coins += totalWin;
+    state.stats.won += totalWin;
+    state.stats.biggestWin = Math.max(state.stats.biggestWin, totalWin);
+    lastWin = totalWin;
+    gainXP(totalWin / 20);
+    const mult = totalWin / bet();
+    if (mult >= 50) unlock('win50');
+    if (mult >= 100) unlock('win100');
+    if (mult >= 150) unlock('legendary');
+    addHistory(isFree ? 'FREE' : 'SPIN', totalWin, chain);
+    if (mult >= 15) { await bigWin(totalWin, mult); }
+    else {
+      SFX.win();
+      $('win-message').textContent = chain > 1 ? `${chain}-CHAIN TUMBLE WIN` : 'WIN';
+      $('win-amount').textContent = '+' + fmt(totalWin);
+      burst(innerWidth / 2, innerHeight / 2, WIN_COLORS, 24, 6);
+    }
+  } else {
+    addHistory(isFree ? 'FREE' : 'SPIN', 0, chain);
+    $('win-message').textContent = ['So close…', 'The gems are charging…', 'Tumble awaits…', 'Next one shatters!'][Math.floor(Math.random() * 4)];
+    if (!isFree) SFX.lose();
+  }
+
+  // ---- feature triggers ----
+  if (scatters >= 4 && !isFree) {
+    const n = scatters >= 6 ? 15 : scatters === 5 ? 12 : 10;
+    await startFreeSpins(n);
+  } else if (scatters >= 3 && isFree) {
+    state.fs += 5;
+    toast('🌈 RETRIGGER! +5 free spins');
+    SFX.scatter();
+  }
+  const coins = countSym('coin');
+  if (coins >= 6) {
+    const carried = [];
+    grid.forEach((c, i) => { if (c && c.sym.id === 'coin') carried.push(i); });
+    await startHoldWin(carried.length);
+  } else if (!isFree && scatters < 4 && Math.random() < 1 / 130) {
+    toast('✂️ You unearthed a RAW GEM!');
+    await sleep(speed(800));
+    openGemCutter();
+  }
+
+  spinning = false;
+  updateUI();
+  save();
+
+  // ---- continue loops ----
+  if (state.fs > 0) {
+    await sleep(speed(700));
+    return doSpin();
+  }
+  if (state.fs === 0 && state.fsTotal > 0) await endFreeSpins();
+  if (autoSpin && !spinning) {
+    await sleep(speed(650));
+    if (autoSpin) return doSpin();
+  }
+}
+
+/* ============================================================
+   FREE SPINS
+   ============================================================ */
+async function startFreeSpins(n) {
+  unlock('fs_trigger');
+  state.stats.bonuses++;
+  state.fs = n; state.fsTotal = n; state.fsMult = 0;
+  $('machine').classList.add('fs-mode');
+  $('fs-banner').classList.add('on');
+  $('spin-btn').classList.add('fs');
+  $('fs-mult').textContent = '×0';
+  await showInterstitial('🌈 PRISM SURGE', `${n} FREE SPINS<br><span style="font-size:.8rem;color:var(--dim)">Charged Gems now build a multiplier that lasts the whole bonus!</span>`);
+  SFX.bigwin();
+}
+async function endFreeSpins() {
+  state.fsTotal = 0;
+  $('machine').classList.remove('fs-mode');
+  $('fs-banner').classList.remove('on');
+  $('spin-btn').classList.remove('fs');
+  await showInterstitial('✨ BONUS COMPLETE', `Final multiplier reached <b style="color:var(--gold)">×${state.fsMult}</b>`);
+  state.fsMult = 0;
+  updateUI(); save();
+}
+function showInterstitial(title, html) {
+  return new Promise(res => {
+    $('mg-title').textContent = title;
+    $('mg-sub').innerHTML = '';
+    $('mg-body').innerHTML = `<div style="font-family:'Orbitron',sans-serif;font-size:1.3rem;line-height:1.6;margin:10px 0">${html}</div>
+      <button class="mg-btn gold pulse" id="mg-continue">CONTINUE</button>`;
+    $('mg-overlay').classList.add('active');
+    $('mg-continue').onclick = () => { SFX.click(); $('mg-overlay').classList.remove('active'); res(); };
+  });
+}
+
+/* ============================================================
+   BIG WIN PRESENTATION
+   ============================================================ */
+function winTier(mult) {
+  if (mult >= 150) return 'LEGENDARY WIN';
+  if (mult >= 80) return 'EPIC WIN';
+  if (mult >= 40) return 'MEGA WIN';
+  return 'BIG WIN';
+}
+function bigWin(amount, mult) {
+  return new Promise(res => {
+    const ov = $('bigwin-overlay');
+    $('bigwin-tier').textContent = winTier(mult);
+    ov.classList.add('active');
+    $('shake-root').classList.add('shake');
+    setTimeout(() => $('shake-root').classList.remove('shake'), 500);
+    SFX.bigwin();
+    coinShower(mult >= 80 ? 120 : 70);
+    if (navigator.vibrate) navigator.vibrate([60, 40, 60, 40, 120]);
+    const dur = state.turbo ? 900 : 2200, t0 = performance.now();
+    let done = false;
+    function frame(t) {
+      const p = Math.min(1, (t - t0) / dur);
+      $('bigwin-amount').textContent = fmt(amount * (1 - Math.pow(1 - p, 3)));
+      if (p < 1 && !done) requestAnimationFrame(frame);
+      else $('bigwin-amount').textContent = fmt(amount);
+    }
+    requestAnimationFrame(frame);
+    function close() {
+      done = true;
+      ov.classList.remove('active');
+      ov.removeEventListener('click', close);
+      $('win-message').textContent = winTier(mult);
+      $('win-amount').textContent = '+' + fmt(amount);
+      res();
+    }
+    ov.addEventListener('click', close);
+    setTimeout(() => { if (ov.classList.contains('active')) close(); }, dur + 2600);
+  });
+}
+/* ============================================================
+   LIGHTNING HOLD & WIN
+   ============================================================ */
+function rollHwCoin() {
+  const v = weightedPick(HW_VALUES);
+  return { v, jp: ['MINI', 'MINOR', 'MAJOR'].includes(v) };
+}
+function hwLabel(c) { return c.jp ? c.v : fmt(parseFloat(c.v) * bet()); }
+async function startHoldWin(startCoins = 6) {
+  unlock('hw_trigger');
+  state.stats.bonuses++;
+  SFX.jackpot();
+  await showInterstitial('⚡ LIGHTNING HOLD & WIN', 'Gold Nuggets lock in place.<br>3 respins — every new coin resets them.<br><b style="color:var(--gold)">Fill all 30 for the GRAND!</b>');
+
+  const cells = new Array(CELLS).fill(null);
+  // pre-lock the triggering coins in random positions
+  const open = [...Array(CELLS).keys()];
+  for (let k = 0; k < startCoins; k++) {
+    const i = open.splice(Math.floor(Math.random() * open.length), 1)[0];
+    cells[i] = rollHwCoin();
+  }
+  let respins = 3;
+
+  $('mg-title').textContent = '⚡ HOLD & WIN';
+  $('mg-sub').textContent = 'New coins reset your respins';
+  $('mg-body').innerHTML = `<div id="hw-spins-row"></div><div id="hw-grid"></div>
+    <div id="hw-total" style="font-family:'Orbitron',sans-serif;color:var(--gold);font-size:1rem"></div>`;
+  $('mg-overlay').classList.add('active');
+
+  function renderHW(newIdx = -1) {
+    const g = $('hw-grid'); g.innerHTML = '';
+    let total = 0;
+    cells.forEach((c, i) => {
+      const d = document.createElement('div');
+      d.className = 'hw-cell' + (c ? ' locked' : '');
+      if (c) {
+        d.innerHTML = `<span>🪙</span><span class="hv${c.jp ? ' jp' : ''}">${hwLabel(c)}</span>`;
+        if (i === newIdx) d.style.animation = 'hwLock .3s cubic-bezier(.2,1.5,.4,1)';
+        if (!c.jp) total += parseFloat(c.v) * bet();
+        else total += state.jp[c.v.toLowerCase()];
+      }
+      g.appendChild(d);
+    });
+    $('hw-spins-row').innerHTML = [0, 1, 2].map(i => `<div class="hw-spin-dot${i < respins ? ' lit' : ''}"></div>`).join('');
+    $('hw-total').textContent = 'LOCKED VALUE: ' + fmt(total);
+    return total;
+  }
+  renderHW();
+  await sleep(speed(900));
+
+  while (respins > 0 && cells.some(c => !c)) {
+    await sleep(speed(750));
+    SFX.spin();
+    respins--;
+    // each respin: each empty cell has a chance to land a coin
+    const empties = cells.map((c, i) => c ? -1 : i).filter(i => i >= 0);
+    let landed = 0;
+    for (const i of empties) {
+      if (Math.random() < 0.13) {
+        cells[i] = rollHwCoin();
+        landed++;
+        SFX.lock();
+        renderHW(i);
+        await sleep(speed(260));
+      }
+    }
+    if (landed > 0) { respins = 3; toast('🪙 Coin landed — respins reset!'); }
+    renderHW();
+  }
+
+  const full = cells.every(c => c);
+  let total = 0;
+  cells.forEach(c => {
+    if (!c) return;
+    if (c.jp) { total += winJackpot(c.v.toLowerCase()); }
+    else total += parseFloat(c.v) * bet();
+  });
+  if (full) { total += winJackpot('grand'); unlock('grand'); }
+  state.coins += total;
+  state.stats.won += total;
+  state.stats.biggestWin = Math.max(state.stats.biggestWin, total);
+  lastWin = total;
+  addHistory('H&W', total, 0);
+  $('mg-overlay').classList.remove('active');
+  await bigWin(total, total / bet());
+  updateUI(); save();
+}
+function winJackpot(tier) {
+  unlock('jackpot');
+  if (tier === 'grand') unlock('grand');
+  state.stats.jackpots++;
+  const amt = Math.floor(state.jp[tier]);
+  state.jp[tier] = JP_SEED[tier];
+  SFX.jackpot();
+  toast(`🎯 ${tier.toUpperCase()} JACKPOT — ${fmt(amt)}!`);
+  coinShower(100);
+  return amt;
+}
+
+/* ============================================================
+   GEM FORGE — boon picker
+   ============================================================ */
+function openForge() {
+  if (state.forge < FORGE_CAP || spinning) return;
+  SFX.forge();
+  state.forge = 0;
+  state.forgeCount++;
+  unlock('forge1');
+  if (state.forgeCount >= 10) unlock('forge10');
+  updateForge();
+  const picks = [...BOONS].sort(() => Math.random() - .5).slice(0, 3);
+  $('mg-title').textContent = '⛏️ THE GEM FORGE';
+  $('mg-sub').textContent = 'Your shattered gems have been smelted. Choose one boon:';
+  $('mg-body').innerHTML = '';
+  picks.forEach(b => {
+    const btn = document.createElement('button');
+    btn.className = 'boon-card';
+    btn.innerHTML = `<span class="be">${b.e}</span><span><span class="bn">${b.n}</span><br><span class="bd">${b.d}</span></span>`;
+    btn.onclick = () => { $('mg-overlay').classList.remove('active'); grantBoon(b.id); };
+    $('mg-body').appendChild(btn);
+  });
+  $('mg-overlay').classList.add('active');
+  save();
+}
+async function grantBoon(id) {
+  SFX.click();
+  if (id === 'vault') {
+    const amt = Math.round(rand(10, 25)) * bet();
+    state.coins += amt; state.stats.won += amt; lastWin = amt;
+    SFX.bigwin(); coinShower(50);
+    toast(`💰 Coin Vault cracked: +${fmt(amt)}!`);
+    addHistory('BOON', amt, 0);
+  } else if (id === 'charged') {
+    state.chargedSpins = 5;
+    toast('⚡ Charged Spins: 5 spins with guaranteed extra Charged Gems!');
+  } else if (id === 'prism') {
+    await startFreeSpins(8);
+    doSpin();
+  } else if (id === 'rush') {
+    await startHoldWin(8);
+  } else if (id === 'mine') {
+    openGemMine();
+  } else if (id === 'wheel') {
+    openCrystalWheel();
+  } else if (id === 'cutter') {
+    openGemCutter();
+  }
+  updateUI(); save();
+}
+
+/* ============================================================
+   GEM MINE — push-your-luck picks
+   ============================================================ */
+function openGemMine() {
+  state.stats.bonuses++;
+  const prizes = [];
+  for (let i = 0; i < 13; i++) prizes.push({ t: 'coin', v: weightedPick([[0.5, 8], [1, 8], [1.5, 6], [2, 5], [3, 3], [5, 2], [8, 1]]) });
+  for (let i = 0; i < 3; i++) prizes.push({ t: 'cavein' });
+  prizes.sort(() => Math.random() - .5);
+  let total = 0, picks = 0, over = false;
+
+  $('mg-title').textContent = '⛏️ GEM MINE';
+  $('mg-sub').textContent = 'Dig for gems. Hit a cave-in and you keep only half. Collect any time!';
+  $('mg-body').innerHTML = `<div id="mine-total">0</div><div id="mine-grid"></div>
+    <button class="mg-btn gold" id="mine-collect">COLLECT 100%</button>`;
+  const g = $('mine-grid');
+  prizes.forEach((p, i) => {
+    const t = document.createElement('button');
+    t.className = 'mine-tile'; t.textContent = '🪨';
+    t.onclick = async () => {
+      if (over || t.classList.contains('revealed')) return;
+      t.classList.add('revealed');
+      picks++;
+      if (p.t === 'cavein') {
+        t.classList.add('cavein'); t.textContent = '💥';
+        SFX.lose();
+        $('shake-root').classList.add('shake');
+        setTimeout(() => $('shake-root').classList.remove('shake'), 500);
+        over = true;
+        total = Math.floor(total / 2);
+        await sleep(900);
+        finishMine(total, 'The mine caved in! You escape with half:');
+      } else {
+        const amt = p.v * bet();
+        total += amt;
+        t.textContent = '💎';
+        SFX.coin();
+        const r = t.getBoundingClientRect();
+        burst(r.left + r.width / 2, r.top + r.height / 2, WIN_COLORS, 10, 4);
+        $('mine-total').textContent = fmt(total);
+        if (picks === 13) { unlock('mine_clean'); over = true; await sleep(700); finishMine(total, '⛏️ FULL CLEAR! Every gem mined:'); }
+      }
+    };
+    g.appendChild(t);
+  });
+  $('mine-collect').onclick = () => { if (!over) { over = true; finishMine(total, 'Smart miner. You collect:'); } };
+  $('mg-overlay').classList.add('active');
+}
+async function finishMine(total, msg) {
+  state.coins += total; state.stats.won += total; lastWin = total;
+  addHistory('MINE', total, 0);
+  $('mg-overlay').classList.remove('active');
+  if (total > 0) { SFX.win(); toast(`⛏️ ${msg} +${fmt(total)}`); }
+  else toast('⛏️ The mine kept its secrets…');
+  updateUI(); save();
+}
+
+/* ============================================================
+   CRYSTAL WHEEL — two-tier wheel
+   ============================================================ */
+const WHEEL_OUTER = [1, 2, 'UP', 1.5, 3, 1, 5, 'UP', 2, 8, 1.5, 15];
+const WHEEL_INNER = [20, 30, 'MINI', 25, 50, 'MINOR', 40, 100];
+function buildWheelSVG(segs, inner) {
+  const n = segs.length, R = 100;
+  const colors = inner
+    ? ['#3a1f6e', '#5a2d8a', '#2a1450', '#7a3aa0']
+    : ['#1d1242', '#2a1a5e', '#161033', '#3a2470'];
+  let paths = '';
+  for (let i = 0; i < n; i++) {
+    const a0 = (i / n) * Math.PI * 2 - Math.PI / 2, a1 = ((i + 1) / n) * Math.PI * 2 - Math.PI / 2;
+    const x0 = 110 + R * Math.cos(a0), y0 = 110 + R * Math.sin(a0);
+    const x1 = 110 + R * Math.cos(a1), y1 = 110 + R * Math.sin(a1);
+    const special = typeof segs[i] === 'string';
+    paths += `<path d="M110,110 L${x0.toFixed(1)},${y0.toFixed(1)} A${R},${R} 0 0 1 ${x1.toFixed(1)},${y1.toFixed(1)} Z"
+      fill="${special ? '#7a4a00' : colors[i % colors.length]}" stroke="#8B5CF6" stroke-width="1"/>`;
+    const am = (a0 + a1) / 2, tx = 110 + 68 * Math.cos(am), ty = 110 + 68 * Math.sin(am);
+    const label = typeof segs[i] === 'string' ? segs[i] : '×' + segs[i];
+    paths += `<text x="${tx.toFixed(1)}" y="${ty.toFixed(1)}" fill="${special ? '#FFC93C' : '#E8E3FF'}"
+      font-size="13" font-weight="900" font-family="Orbitron,sans-serif" text-anchor="middle"
+      transform="rotate(${(am * 180 / Math.PI + 90).toFixed(1)} ${tx.toFixed(1)} ${ty.toFixed(1)})">${label}</text>`;
+  }
+  return `<svg id="wheel-svg" viewBox="0 0 220 220"><g id="wheel-rotor">${paths}</g>
+    <circle cx="110" cy="110" r="22" fill="#0a0522" stroke="#FFC93C" stroke-width="2"/>
+    <text x="110" y="116" fill="#FFC93C" font-size="16" text-anchor="middle">💎</text></svg>`;
+}
+function openCrystalWheel(inner = false) {
+  if (!inner) state.stats.bonuses++;
+  const segs = inner ? WHEEL_INNER : WHEEL_OUTER;
+  $('mg-title').textContent = inner ? '💠 INNER CRYSTAL WHEEL' : '🎡 CRYSTAL WHEEL';
+  $('mg-sub').textContent = inner ? 'Premium prizes only. No way down from here.' : 'Land UP to ascend to the premium inner wheel!';
+  $('mg-body').innerHTML = `<div id="wheel-wrap"><div id="wheel-pointer"></div>${buildWheelSVG(segs, inner)}</div>
+    <button class="mg-btn gold pulse" id="wheel-spin">SPIN THE WHEEL</button>`;
+  $('mg-overlay').classList.add('active');
+  $('wheel-spin').onclick = async () => {
+    $('wheel-spin').disabled = true; $('wheel-spin').classList.remove('pulse');
+    SFX.spin();
+    const n = segs.length;
+    const target = Math.floor(Math.random() * n);
+    // pointer at top; rotate so target segment centre lands under pointer
+    const segAngle = 360 / n;
+    const final = 360 * 5 + (360 - (target * segAngle + segAngle / 2));
+    const rotor = document.getElementById('wheel-rotor');
+    rotor.style.transition = 'transform 4s cubic-bezier(.15,.6,.2,1)';
+    rotor.style.transform = `rotate(${final}deg)`;
+    const ticker = setInterval(() => SFX.tick(), 180);
+    await sleep(4100);
+    clearInterval(ticker);
+    const prize = segs[target];
+    if (prize === 'UP') {
+      SFX.scatter();
+      toast('💠 ASCENDING to the Inner Wheel!');
+      await sleep(700);
+      openCrystalWheel(true);
+      return;
+    }
+    let amt;
+    if (prize === 'MINI' || prize === 'MINOR') amt = winJackpot(prize.toLowerCase());
+    else amt = prize * bet();
+    state.coins += amt; state.stats.won += amt; lastWin = amt;
+    state.stats.biggestWin = Math.max(state.stats.biggestWin, amt);
+    addHistory('WHEEL', amt, 0);
+    $('mg-overlay').classList.remove('active');
+    if (amt / bet() >= 15) await bigWin(amt, amt / bet());
+    else { SFX.win(); toast(`🎡 The wheel grants +${fmt(amt)}!`); }
+    updateUI(); save();
+  };
+}
+
+/* ============================================================
+   GEM CUTTER — timing skill game
+   ============================================================ */
+function openGemCutter() {
+  state.stats.bonuses++;
+  $('mg-title').textContent = '✂️ GEM CUTTER';
+  $('mg-sub').textContent = 'A raw gem! Stop the blade in the green for a clean cut — perfect centre pays ×25.';
+  $('mg-body').innerHTML = `<div id="cutter-gem">💎</div>
+    <div id="cutter-track"><div id="cutter-needle"></div></div>
+    <button class="mg-btn gold pulse" id="cutter-btn">CUT!</button>`;
+  $('mg-overlay').classList.add('active');
+  let pos = 0, dir = 1, running = true;
+  const needle = $('cutter-needle'), track = $('cutter-track');
+  function loop() {
+    if (!running) return;
+    pos += dir * 1.65;
+    if (pos >= 100) { pos = 100; dir = -1; }
+    if (pos <= 0) { pos = 0; dir = 1; }
+    needle.style.left = `calc(${pos}% - 2px)`;
+    requestAnimationFrame(loop);
+  }
+  requestAnimationFrame(loop);
+  $('cutter-btn').onclick = async () => {
+    running = false;
+    SFX.shatter(2);
+    const off = Math.abs(pos - 50);
+    let mult, msg;
+    if (off <= 3)      { mult = 25; msg = '💎 PERFECT CUT!'; unlock('cut_perfect'); }
+    else if (off <= 8) { mult = 10; msg = '✨ Brilliant cut!'; }
+    else if (off <= 18){ mult = 5;  msg = 'Clean cut.'; }
+    else if (off <= 32){ mult = 2;  msg = 'A bit rough…'; }
+    else               { mult = 0.5; msg = '💔 The gem cracked!'; }
+    const amt = Math.round(mult * bet());
+    state.coins += amt; state.stats.won += amt; lastWin = amt;
+    addHistory('CUT', amt, 0);
+    $('cutter-gem').textContent = mult >= 5 ? '💎' : '🪨';
+    burst(innerWidth / 2, innerHeight / 2, WIN_COLORS, 26, 7);
+    await sleep(800);
+    $('mg-overlay').classList.remove('active');
+    if (mult >= 10) SFX.bigwin(); else if (mult >= 2) SFX.win(); else SFX.lose();
+    toast(`${msg} +${fmt(amt)}`);
+    updateUI(); save();
+  };
+}
+
+/* ============================================================
+   DAILY WHEEL & BONUS BUY
+   ============================================================ */
+const DAILY_COOLDOWN = 20 * 60 * 60 * 1000;
+function dailyReady() { return Date.now() - state.lastDaily > DAILY_COOLDOWN; }
+function openDaily() {
+  const segs = [2, 5, 3, 10, 4, 20, 5, 50].map(v => v * (1 + state.level * 0.25));
+  $('mg-title').textContent = '📅 DAILY PRISM WHEEL';
+  $('mg-sub').textContent = `Welcome back! One free spin — prizes scale with your level (Lv.${state.level}).`;
+  $('mg-body').innerHTML = `<div id="wheel-wrap"><div id="wheel-pointer"></div>${buildWheelSVG(segs.map(v => Math.round(v)), false)}</div>
+    <button class="mg-btn gold pulse" id="daily-spin">CLAIM FREE SPIN</button>`;
+  $('mg-overlay').classList.add('active');
+  $('daily-spin').onclick = async () => {
+    $('daily-spin').disabled = true;
+    state.lastDaily = Date.now();
+    state.dailyClaims++;
+    if (state.dailyClaims >= 5) unlock('daily5');
+    SFX.spin();
+    const n = segs.length, target = Math.floor(Math.random() * n);
+    const segAngle = 360 / n;
+    const rotor = document.getElementById('wheel-rotor');
+    rotor.style.transition = 'transform 3.5s cubic-bezier(.15,.6,.2,1)';
+    rotor.style.transform = `rotate(${360 * 4 + (360 - (target * segAngle + segAngle / 2))}deg)`;
+    const ticker = setInterval(() => SFX.tick(), 170);
+    await sleep(3600);
+    clearInterval(ticker);
+    const amt = Math.round(segs[target]) * BETS[2];
+    state.coins += amt;
+    $('mg-overlay').classList.remove('active');
+    SFX.win(); coinShower(40);
+    toast(`📅 Daily bonus: +${fmt(amt)} gems!`);
+    updateUI(); save();
+  };
+}
+function openBuyMenu() {
+  if (spinning) return;
+  SFX.click();
+  const fsCost = bet() * 100, superCost = bet() * 200, hwCost = bet() * 120;
+  $('mg-title').textContent = '🛒 BONUS BUY';
+  $('mg-sub').textContent = 'Skip the grind. Buy straight into a feature at your current bet.';
+  $('mg-body').innerHTML = `
+    <button class="boon-card" id="buy-fs"><span class="be">🌈</span><span><span class="bn">FREE SPINS — ${fmt(fsCost)}</span><br><span class="bd">10 free spins with the accumulating multiplier</span></span></button>
+    <button class="boon-card" id="buy-super"><span class="be">⚡</span><span><span class="bn">SUPER FREE SPINS — ${fmt(superCost)}</span><br><span class="bd">10 free spins starting at ×10 multiplier</span></span></button>
+    <button class="boon-card" id="buy-hw"><span class="be">🪙</span><span><span class="bn">HOLD &amp; WIN — ${fmt(hwCost)}</span><br><span class="bd">Lightning respins with 7 coins pre-locked</span></span></button>
+    <button class="mg-btn" id="buy-cancel">CANCEL</button>`;
+  $('mg-overlay').classList.add('active');
+  const buy = async (cost, fn) => {
+    if (state.coins < cost) { toast('💸 Not enough gems for that buy.'); return; }
+    state.coins -= cost; state.stats.wagered += cost;
+    unlock('buy_bonus');
+    gainXP(cost / 10);
+    $('mg-overlay').classList.remove('active');
+    updateUI();
+    await fn();
+  };
+  $('buy-fs').onclick = () => buy(fsCost, async () => { await startFreeSpins(10); doSpin(); });
+  $('buy-super').onclick = () => buy(superCost, async () => { await startFreeSpins(10); state.fsMult = 10; $('fs-mult').textContent = '×10'; doSpin(); });
+  $('buy-hw').onclick = () => buy(hwCost, () => startHoldWin(7));
+  $('buy-cancel').onclick = () => { SFX.click(); $('mg-overlay').classList.remove('active'); };
+}
+/* ============================================================
+   PROGRESSION — XP, levels, achievements, history
+   ============================================================ */
+function xpNeeded(lvl) { return Math.floor(100 * Math.pow(lvl, 1.5)); }
+function gainXP(amount) {
+  state.xp += amount;
+  while (state.xp >= xpNeeded(state.level)) {
+    state.xp -= xpNeeded(state.level);
+    state.level++;
+    const reward = 100 * state.level;
+    state.coins += reward;
+    SFX.bigwin();
+    coinShower(40);
+    toast(`⭐ LEVEL ${state.level}! Reward: +${fmt(reward)} gems`);
+    if (state.level >= 5) unlock('level5');
+    if (state.level >= 10) unlock('level10');
+  }
+}
+function unlock(id) {
+  if (state.achievements[id]) return;
+  const a = ACHIEVEMENTS.find(x => x.id === id);
+  if (!a) return;
+  state.achievements[id] = true;
+  toast(`🏅 Achievement: <b>${a.e} ${a.n}</b><br><span style="color:var(--dim);font-size:.75rem">${a.d}</span>`);
+  SFX.scatter();
+  renderAchievements();
+  save();
+}
+function addHistory(type, amount, chain) {
+  state.history.unshift({ type, amount, chain, bet: bet(), t: Date.now() });
+  state.history = state.history.slice(0, 20);
+  renderHistory();
+}
+
+/* ============================================================
+   UI RENDERING
+   ============================================================ */
+function updateUI() {
+  $('coins-val').textContent = fmt(state.coins);
+  $('last-win-val').textContent = lastWin > 0 ? '+' + fmt(lastWin) : '—';
+  $('level-val').textContent = state.level;
+  $('xp-fill').style.width = Math.min(100, state.xp / xpNeeded(state.level) * 100) + '%';
+  $('bet-val').textContent = fmt(bet());
+  $('jp-grand-val').textContent = fmt(state.jp.grand);
+  $('jp-major-val').textContent = fmt(state.jp.major);
+  $('jp-minor-val').textContent = fmt(state.jp.minor);
+  $('jp-mini-val').textContent = fmt(state.jp.mini);
+  $('fs-count').textContent = state.fs;
+  $('ante-btn').classList.toggle('on', state.ante);
+  $('turbo-btn').classList.toggle('on', state.turbo);
+  $('auto-btn').classList.toggle('on', autoSpin);
+  $('sound-btn').classList.toggle('on', state.sound);
+  $('sound-btn').firstChild.textContent = state.sound ? '🔊' : '🔇';
+  const sb = $('spin-btn');
+  if (state.fs > 0) sb.innerHTML = `FREE<span class="sub">${state.fs} LEFT</span>`;
+  else if (state.chargedSpins > 0) sb.innerHTML = `SPIN<span class="sub">⚡ ${state.chargedSpins} CHARGED</span>`;
+  else sb.innerHTML = `SPIN<span class="sub">${state.ante ? 'ANTE ' + fmt(betCost()) : 'GOOD LUCK'}</span>`;
+  renderStats();
+  updateForge();
+}
+function updateForge() {
+  $('forge-fill').style.width = (state.forge / FORGE_CAP * 100) + '%';
+  const btn = $('forge-btn');
+  const ready = state.forge >= FORGE_CAP;
+  btn.classList.toggle('ready', ready);
+  btn.textContent = ready ? '⚒️ SMELT!' : `${state.forge}/${FORGE_CAP}`;
+}
+function renderPaytable() {
+  let html = '';
+  for (const s of SYMBOLS) {
+    html += `<div class="pay-row"><span class="pe">${s.e}</span><span class="pn">${s.name}</span>
+      <span class="pv">8+ ×${s.pays[0]} · 10+ ×${s.pays[1]} · 12+ ×${s.pays[2]}</span></div>`;
+  }
+  html += `<div class="pay-row"><span class="pe">🌈</span><span class="pn">Prism Scatter</span><span class="pv">4+ anywhere = FREE SPINS<br>4=×3 · 5=×5 · 6+=×100</span></div>`;
+  html += `<div class="pay-row"><span class="pe">⚡</span><span class="pn">Charged Gem</span><span class="pv">×2–×500 · multiplies tumble wins</span></div>`;
+  html += `<div class="pay-row"><span class="pe">🪙</span><span class="pn">Gold Nugget</span><span class="pv">6+ = LIGHTNING HOLD &amp; WIN</span></div>`;
+  html += `<div class="feature-note">
+    <b>Scatter pays:</b> 8+ matching gems anywhere on the 6×5 grid pay — no paylines. Wins shatter and new gems <b>tumble</b> in; chains continue until no win remains.<br><br>
+    <b>⚡ Charged Gems</b> survive tumbles. When a spin sequence wins, all visible charge values are <b>summed and multiply the total</b>.<br><br>
+    <b>🌈 Free Spins:</b> every applied charge adds to a multiplier that <b>persists for the whole bonus</b>. 3+ scatters retrigger +5.<br><br>
+    <b>🪙 Hold &amp; Win:</b> 6+ nuggets lock the grid into Lightning Respins with MINI/MINOR/MAJOR coins. Fill all 30 cells for the <b>GRAND</b>.<br><br>
+    <b>⛏️ The Forge:</b> every gem you shatter feeds the forge. A full forge smelts a boon — charged spins, instant bonuses, the Gem Mine, the Crystal Wheel.<br><br>
+    <b>ANTE ×1.25:</b> raises your bet 25% and boosts scatter &amp; nugget odds by 50%.</div>`;
+  $('panel-pay').innerHTML = html;
+}
+function renderStats() {
+  const st = state.stats;
+  const rtp = st.wagered > 0 ? (st.won / st.wagered * 100).toFixed(1) + '%' : '—';
+  $('panel-stats').innerHTML = `<div class="stat-grid">
+    <div class="stat-box"><div class="sl">Total Spins</div><div class="sv">${fmt(st.spins)}</div></div>
+    <div class="stat-box"><div class="sl">Total Wagered</div><div class="sv">${fmt(st.wagered)}</div></div>
+    <div class="stat-box"><div class="sl">Total Won</div><div class="sv">${fmt(st.won)}</div></div>
+    <div class="stat-box"><div class="sl">Session RTP</div><div class="sv">${rtp}</div></div>
+    <div class="stat-box"><div class="sl">Biggest Win</div><div class="sv">${fmt(st.biggestWin)}</div></div>
+    <div class="stat-box"><div class="sl">Longest Chain</div><div class="sv">×${st.biggestChain}</div></div>
+    <div class="stat-box"><div class="sl">Bonuses Played</div><div class="sv">${fmt(st.bonuses)}</div></div>
+    <div class="stat-box"><div class="sl">Jackpots Hit</div><div class="sv">${fmt(st.jackpots)}</div></div>
+    <div class="stat-box"><div class="sl">Boons Smelted</div><div class="sv">${fmt(state.forgeCount)}</div></div>
+    <div class="stat-box"><div class="sl">XP to Next Level</div><div class="sv">${fmt(Math.max(0, xpNeeded(state.level) - state.xp))}</div></div>
+  </div>`;
+}
+function renderAchievements() {
+  const g = $('achieve-grid');
+  g.innerHTML = '';
+  for (const a of ACHIEVEMENTS) {
+    const d = document.createElement('div');
+    d.className = 'achievement' + (state.achievements[a.id] ? ' unlocked' : '');
+    d.title = a.d;
+    d.innerHTML = `<div class="ae">${a.e}</div><div class="an">${a.n}</div>`;
+    g.appendChild(d);
+  }
+}
+function renderHistory() {
+  const list = $('history-list');
+  if (!state.history.length) { list.innerHTML = '<div style="color:var(--dim);text-align:center;padding:10px">No spins yet — pull the lever!</div>'; return; }
+  list.innerHTML = state.history.map(h => {
+    const cls = ['H&W', 'BOON', 'MINE', 'WHEEL', 'CUT'].includes(h.type) ? 'bonus' : (h.amount > 0 ? 'win' : 'loss');
+    const chain = h.chain > 1 ? ` ⛓️×${h.chain}` : '';
+    return `<div class="history-item ${cls}"><span>${h.type}${chain} · bet ${fmt(h.bet)}</span><span class="hw">${h.amount > 0 ? '+' + fmt(h.amount) : '—'}</span></div>`;
+  }).join('');
+}
+
+/* ============================================================
+   CONTROLS & INIT
+   ============================================================ */
+$('spin-btn').onclick = () => { audio(); if (spinning) { autoSpin = false; return; } doSpin(); };
+$('bet-down').onclick = () => { if (spinning) return; SFX.click(); state.betIdx = Math.max(0, state.betIdx - 1); updateUI(); save(); };
+$('bet-up').onclick = () => { if (spinning) return; SFX.click(); state.betIdx = Math.min(BETS.length - 1, state.betIdx + 1); updateUI(); save(); };
+$('ante-btn').onclick = () => { if (spinning) return; SFX.click(); state.ante = !state.ante; updateUI(); save(); };
+$('auto-btn').onclick = () => {
+  SFX.click(); autoSpin = !autoSpin; updateUI();
+  if (autoSpin && !spinning) doSpin();
+  toast(autoSpin ? '♻️ Auto-spin ON — tap SPIN or AUTO to stop' : '♻️ Auto-spin off');
+};
+$('turbo-btn').onclick = () => { SFX.click(); state.turbo = !state.turbo; updateUI(); save(); toast(state.turbo ? '⚡ TURBO mode — lightning cascades' : '🐢 Normal speed'); };
+$('sound-btn').onclick = () => { state.sound = !state.sound; SFX.click(); updateUI(); save(); };
+$('buy-btn').onclick = openBuyMenu;
+$('forge-btn').onclick = openForge;
+$('level-card').onclick = () => toast(`⭐ Level ${state.level} · ${fmt(Math.floor(state.xp))}/${fmt(xpNeeded(state.level))} XP<br><span style="color:var(--dim);font-size:.75rem">Earn XP by wagering and winning. Level-ups pay gem rewards.</span>`);
+
+document.querySelectorAll('.tab-btn').forEach(b => b.onclick = () => {
+  SFX.click();
+  document.querySelectorAll('.tab-btn').forEach(x => x.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(x => x.classList.remove('active'));
+  b.classList.add('active');
+  $('panel-' + b.dataset.tab).classList.add('active');
+});
+
+document.addEventListener('keydown', e => {
+  if (e.code === 'Space' || e.code === 'Enter') {
+    if (e.target.tagName === 'BUTTON' && e.code === 'Enter') return;
+    e.preventDefault(); audio();
+    if (!spinning && !$('mg-overlay').classList.contains('active') && !$('bigwin-overlay').classList.contains('active')) doSpin();
+  }
+  if (e.code === 'KeyT') $('turbo-btn').click();
+  if (e.code === 'KeyA') $('auto-btn').click();
+});
+let touchY = null;
+document.addEventListener('touchstart', e => { touchY = e.touches[0].clientY; }, { passive: true });
+document.addEventListener('touchend', e => {
+  if (touchY === null) return;
+  const dy = e.changedTouches[0].clientY - touchY;
+  touchY = null;
+  if (dy > 70 && !spinning && !$('mg-overlay').classList.contains('active')) { audio(); doSpin(); }
+}, { passive: true });
+window.addEventListener('resize', sizeCanvases);
+
+/* ---- boot ---- */
+load();
+sizeCanvases();
+particleLoop();
+fillGrid();
+renderGrid(true);
+renderPaytable();
+renderAchievements();
+renderHistory();
+updateUI();
+setInterval(() => { // ambient jackpot drift so the strip always feels alive
+  state.jp.grand += rand(.1, .9); state.jp.major += rand(.05, .4);
+  state.jp.minor += rand(.02, .2); state.jp.mini += rand(.01, .1);
+  $('jp-grand-val').textContent = fmt(state.jp.grand);
+  $('jp-major-val').textContent = fmt(state.jp.major);
+  $('jp-minor-val').textContent = fmt(state.jp.minor);
+  $('jp-mini-val').textContent = fmt(state.jp.mini);
+}, 1400);
+setTimeout(() => {
+  if (dailyReady()) openDaily();
+  else if (state.stats.spins === 0) toast('💎 Welcome to PRISMFALL!<br><span style="color:var(--dim);font-size:.75rem">Match 8+ gems anywhere. Wins tumble. ⚡ gems multiply everything.</span>');
+}, 900);
+</script>
+</body>
+</html>
