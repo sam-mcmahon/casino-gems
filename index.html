@@ -181,8 +181,13 @@ body{
   transition:background .2s;
 }
 .cell .sym{display:block;line-height:1;filter:drop-shadow(0 2px 4px rgba(0,0,0,.6))}
-.cell.drop .sym{animation:gemDrop .42s cubic-bezier(.25,.9,.4,1.15) backwards}
-@keyframes gemDrop{from{transform:translateY(-220%);opacity:.2}to{transform:translateY(0);opacity:1}}
+.cell.drop .sym{animation:gemDrop .46s cubic-bezier(.3,.8,.4,1) backwards}
+@keyframes gemDrop{
+  0%{transform:translateY(-220%) scale(.92,1.12);opacity:.2}
+  68%{transform:translateY(0) scale(1,1);opacity:1}
+  80%{transform:translateY(0) scale(1.16,.8)}
+  100%{transform:translateY(0) scale(1,1)}
+}
 .cell.shatter .sym{animation:gemShatter .38s ease-in forwards}
 @keyframes gemShatter{
   0%{transform:scale(1) rotate(0);opacity:1;filter:brightness(2.2) drop-shadow(0 0 12px #fff)}
@@ -744,11 +749,147 @@ body.bro #bigwin-amount{font-family:'Press Start 2P',monospace;font-size:clamp(1
 body.bro #bigwin-rays{background:repeating-conic-gradient(rgba(255,140,26,.14) 0deg 9deg,transparent 9deg 18deg)}
 body.bro #mg-box{background:linear-gradient(180deg,#2a3d18,#16240b 60%,#1f1408);box-shadow:0 0 0 4px #0e1a08,0 0 0 8px #6e4a22}
 body.bro #version-footer{color:#0d3a5e}
+
+/* ============================================================
+   ✨ DESIGN PASS v1.6 — game-feel, ambient life, win choreography
+   ============================================================ */
+/* -- richer panel depth: subtle top-light on glass surfaces -- */
+.hud-card,.jp-pill,#forge-bar{background-image:linear-gradient(180deg,rgba(255,255,255,.05),rgba(255,255,255,0) 45%)}
+
+/* -- ambient layer (behind the app, in front of the backdrop) -- */
+#ambient{position:fixed;inset:0;z-index:-1;pointer-events:none;overflow:hidden}
+#ambient .fog{
+  position:absolute;left:-30vw;width:160vw;height:42vh;bottom:-8vh;display:none;
+  background:radial-gradient(ellipse at 30% 80%,rgba(157,255,59,.06),transparent 60%),
+             radial-gradient(ellipse at 70% 95%,rgba(190,210,190,.09),transparent 55%);
+}
+body.zombie #ambient .fog{display:block;animation:fogDrift 26s ease-in-out infinite alternate}
+#fog2{bottom:-18vh;opacity:.7;animation-duration:36s !important;animation-direction:alternate-reverse !important}
+@keyframes fogDrift{from{transform:translateX(-6vw)}to{transform:translateX(6vw)}}
+.shooting-star{
+  position:absolute;width:90px;height:2px;border-radius:2px;opacity:0;
+  background:linear-gradient(90deg,rgba(255,255,255,.95),rgba(0,229,255,.4) 60%,transparent);
+  animation:starShoot 1.25s ease-out forwards;
+}
+@keyframes starShoot{
+  0%{opacity:0;transform:rotate(28deg) translateX(0)}
+  12%{opacity:.95}
+  100%{opacity:0;transform:rotate(28deg) translateX(36vw)}
+}
+.amb-fly{
+  position:absolute;left:0;font-size:clamp(1.2rem,4vmin,2rem);opacity:.9;
+  transform:translateX(-14vw);animation:ambFly linear forwards;
+  filter:drop-shadow(0 2px 3px rgba(0,0,0,.35));
+}
+@keyframes ambFly{from{transform:translateX(-14vw)}to{transform:translateX(114vw)}}
+#bg-bolt{
+  position:fixed;inset:0;z-index:-1;pointer-events:none;opacity:0;
+  background:radial-gradient(ellipse at 72% 0%,rgba(220,255,220,.55),rgba(157,255,59,.16) 40%,transparent 70%);
+}
+#bg-bolt.go{animation:boltBg .9s ease-out}
+@keyframes boltBg{0%{opacity:0}6%{opacity:1}18%{opacity:.12}30%{opacity:.65}100%{opacity:0}}
+
+/* -- prismatic sheen sweeping the machine (base + grimfall tint) -- */
+#machine-sheen{position:absolute;inset:0;border-radius:16px;overflow:hidden;pointer-events:none;z-index:3}
+#machine-sheen::before{
+  content:'';position:absolute;top:-20%;bottom:-20%;left:0;width:32%;
+  background:linear-gradient(100deg,transparent,rgba(255,255,255,.06) 42%,rgba(0,229,255,.10) 50%,rgba(255,46,196,.07) 58%,transparent);
+  transform:translateX(-260%) skewX(-12deg);
+  animation:machineSheen 9s ease-in-out infinite;
+}
+@keyframes machineSheen{0%,58%{transform:translateX(-260%) skewX(-12deg)}82%,100%{transform:translateX(460%) skewX(-12deg)}}
+body.zombie #machine-sheen::before{background:linear-gradient(100deg,transparent,rgba(157,255,59,.07) 45%,rgba(255,31,31,.08) 55%,transparent)}
+body.bro #machine-sheen{display:none}
+
+/* -- cascade juice: near-cluster wobble + chain milestone pulse -- */
+.cell.wobble .sym{animation:nearWobble .5s ease-in-out 2}
+@keyframes nearWobble{
+  0%,100%{transform:rotate(0) scale(1)}
+  25%{transform:rotate(-7deg) scale(1.09)}
+  75%{transform:rotate(7deg) scale(1.09)}
+}
+#machine.chain-pulse{animation:chainPulse .5s cubic-bezier(.2,1.4,.4,1)}
+@keyframes chainPulse{0%{transform:scale(1)}35%{transform:scale(1.013)}100%{transform:scale(1)}}
+
+/* -- micro-interactions: balance gold pulse, bet bump, forge surge -- */
+.gold-pulse{animation:goldPulse .8s ease}
+@keyframes goldPulse{
+  0%{transform:scale(1)}
+  30%{transform:scale(1.18);text-shadow:0 0 24px rgba(255,201,60,1)}
+  100%{transform:scale(1)}
+}
+.bump{animation:betBump .26s cubic-bezier(.2,1.6,.4,1)}
+@keyframes betBump{0%{transform:scale(1)}40%{transform:scale(1.22)}100%{transform:scale(1)}}
+#forge-fill.surge{animation:forgeFlow 1.1s linear infinite,forgeSurge .7s ease-in-out infinite alternate}
+@keyframes forgeSurge{from{box-shadow:0 0 4px rgba(255,159,28,.5)}to{box-shadow:0 0 16px rgba(255,201,60,.95)}}
+
+/* -- big-win tier choreography -- */
+#bigwin-ring{
+  position:absolute;left:50%;top:50%;width:88vmax;height:88vmax;border-radius:50%;
+  border:3px solid var(--gold);pointer-events:none;opacity:0;z-index:1;
+  transform:translate(-50%,-50%) scale(.05);
+}
+#bigwin-ring.go{animation:ringOut 1.15s cubic-bezier(.2,.7,.3,1) .1s 2}
+#bigwin-overlay.t2 #bigwin-ring.go{animation-iteration-count:3}
+#bigwin-overlay.t3 #bigwin-ring.go{animation-iteration-count:infinite}
+@keyframes ringOut{0%{transform:translate(-50%,-50%) scale(.05);opacity:.85}100%{transform:translate(-50%,-50%) scale(1);opacity:0}}
+#bigwin-overlay.t1 #bigwin-rays{animation-duration:10s}
+#bigwin-overlay.t2 #bigwin-rays{animation-duration:7s}
+#bigwin-overlay.t3 #bigwin-rays{animation-duration:4.5s}
+#bigwin-overlay.t3 #bigwin-tier{animation:bigwinPop .5s cubic-bezier(.2,1.7,.4,1),legendThrob 1s ease-in-out .55s infinite alternate}
+@keyframes legendThrob{from{transform:scale(1)}to{transform:scale(1.06)}}
+
+/* -- takeover entrance showpiece -- */
+#takeover-fx{position:fixed;inset:0;z-index:78;pointer-events:none;overflow:hidden;display:none}
+#takeover-fx.on{display:block}
+.to-wash{position:absolute;inset:-6%;transform:translateX(-115%)}
+.to-wash.go{animation:toWash 1.5s ease-in-out forwards}
+@keyframes toWash{to{transform:translateX(115%)}}
+.to-wash.zmb{background:linear-gradient(100deg,transparent,rgba(110,2,2,.6) 35%,rgba(157,255,59,.28) 50%,rgba(110,2,2,.6) 65%,transparent)}
+.to-wash.brf{background:linear-gradient(100deg,transparent,rgba(255,140,26,.45) 35%,rgba(255,255,255,.5) 50%,rgba(46,134,196,.45) 65%,transparent)}
+.to-hand{
+  position:absolute;bottom:0;line-height:1;transform:translateY(135%);
+  filter:sepia(1) hue-rotate(55deg) saturate(2.4) brightness(.8) drop-shadow(0 0 12px rgba(157,255,59,.55));
+  animation:handRise 1.7s cubic-bezier(.2,1.1,.4,1) forwards;
+}
+@keyframes handRise{
+  0%{transform:translateY(135%) rotate(-6deg)}
+  45%{transform:translateY(6%) rotate(4deg)}
+  62%{transform:translateY(13%) rotate(-3deg)}
+  78%{transform:translateY(8%) rotate(2deg)}
+  100%{transform:translateY(135%) rotate(0)}
+}
+.to-jet{
+  position:absolute;left:0;font-size:8vmin;line-height:1;transform:translateX(-22vw);
+  animation:jetFly 1.25s linear forwards;
+  filter:drop-shadow(0 0 8px rgba(255,255,255,.55));
+}
+.to-jet::after{
+  content:'';position:absolute;right:96%;top:54%;width:34vw;height:3px;border-radius:2px;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.8));
+}
+@keyframes jetFly{to{transform:translateX(116vw)}}
+.to-stamp{
+  position:absolute;left:50%;top:38%;white-space:nowrap;text-align:center;opacity:0;
+  font-size:clamp(1.3rem,6.5vw,3rem);letter-spacing:.08em;
+  transform:translate(-50%,-50%) scale(2.4);
+  animation:stampIn 1.6s ease .22s forwards;
+}
+@keyframes stampIn{
+  0%{opacity:0;transform:translate(-50%,-50%) scale(2.4)}
+  16%{opacity:1;transform:translate(-50%,-50%) scale(1)}
+  78%{opacity:1;transform:translate(-50%,-50%) scale(1)}
+  100%{opacity:0;transform:translate(-50%,-50%) scale(.96)}
+}
+.to-stamp.zmb{font-family:'Nosifer',cursive;color:#FF1F1F;text-shadow:0 0 28px rgba(255,31,31,.9),0 2px 4px #000}
+.to-stamp.brf{font-family:'Press Start 2P',monospace;color:#FFD24D;text-shadow:3px 3px 0 #000,0 0 24px rgba(255,140,26,.9)}
 </style>
 </head>
 <body>
 <div id="aurora"></div>
 <canvas id="stars"></canvas>
+<div id="bg-bolt"></div>
+<div id="ambient"><div class="fog" id="fog1"></div><div class="fog" id="fog2"></div></div>
 <div id="shake-root">
 <div id="app">
 
@@ -787,6 +928,7 @@ body.bro #version-footer{color:#0d3a5e}
   </div>
 
   <div id="machine">
+    <div id="machine-sheen"></div>
     <div id="fs-banner"><span>✨ FREE SPINS <span id="fs-count">0</span></span><span id="fs-mult">×0</span></div>
     <div id="mode-banner"></div>
     <div id="grid-wrap">
@@ -832,8 +974,9 @@ body.bro #version-footer{color:#0d3a5e}
   </div>
 
   <details id="version-footer">
-    <summary>v1.5 · PRISMFALL — Gem Cascade Casino</summary>
+    <summary>v1.6 · PRISMFALL — Gem Cascade Casino</summary>
     <div id="changelog">
+      <b>v1.6</b> — Claude Design game-feel pass: takeover entrances are now staged showpieces (color wash sweep, zombie hands clawing from the soil / jet squadron strafing the sky, realm title stamp, logo glitch-morphs letter by letter). Ambient life per realm — prismatic sheen sweeps the machine + shooting stars (PRISMFALL), drifting fog, background lightning and rising embers (GRIMFALL), eagle/chopper flybys (BROFALL). Juicier cascades: squash-and-stretch landings, every gem shatters in its own colors, 7-of-a-kind near-miss wobble, machine pulse on chain milestones. Win ladder polish: tier-specific big-win choreography with shockwave rings (LEGENDARY throbs forever), count-up tick sounds, gold pulse on your balance. Micro-feel: bet bump, forge surge glow at 80% with a ready celebration, particle cap for buttery mobile perf.<br>
       <b>v1.5</b> — Mobile Safari truly dialed in: the grid is now sized explicitly from viewport width AND dynamic viewport height (no more aspect-ratio blowups under page zoom — the spin dock can never cover the board). Desktop now features the game: the machine is the hero at up to 760px with gems that scale to fill it, info panels demoted to a fixed-width sidekick.<br>
       <b>v1.4</b> — Takeover modes are now SPECIAL EVENTS, not toggles: land a winning cluster of 10+ 🟢 Emerald Chips to trigger a ZOMBIE OUTBREAK, or 10+ 🔺 Ruby Shards to trigger a BROFORCE RAID. Each takes over the whole game for 10 spins with different winning — all wins ×2, plus 25% reanimation odds (outbreak) or per-spin strafing runs that convert gems toward premium clusters (raid). Countdown banner, lightning entry, "realm restores" exit.<br>
       <b>v1.3</b> — TOTAL takeover modes: 💪 BROFALL is now full pixel-art jungle warfare (day-sky backdrop with drifting clouds, chunky square pixel UI, Press Start 2P type, BROTALITY win tiers) and 🧟 GRIMFALL melts into a blood-soaked crypt-lab (dripping Nosifer logo, flickering neon, surging Frankenstein machine, MONSTER WIN tiers). New IT'S ALIVE mechanic: in either mode a dead spin can be struck by lightning / an airstrike and reanimated into a forced cluster. Skin-tinted particles + thunder SFX. 27 achievements.<br>
@@ -854,6 +997,7 @@ body.bro #version-footer{color:#0d3a5e}
 
 <div id="bigwin-overlay">
   <div id="bigwin-rays"></div>
+  <div id="bigwin-ring"></div>
   <div id="bigwin-tier">BIG WIN</div>
   <div id="bigwin-amount">0</div>
   <div id="bigwin-tap">TAP TO COLLECT</div>
@@ -861,6 +1005,7 @@ body.bro #version-footer{color:#0d3a5e}
 
 <div id="fx-layer"></div>
 <div id="flash"></div>
+<div id="takeover-fx"></div>
 <div id="toast"></div>
 <canvas id="particles"></canvas>
 
@@ -1117,6 +1262,7 @@ function drawStars() {
   }
 }
 function burst(x, y, colors, n = 18, power = 5) {
+  if (particles.length > 480) return; // perf cap: keep mobile smooth
   for (let i = 0; i < n; i++) {
     const a = Math.random() * Math.PI * 2, v = rand(1, power);
     particles.push({ x, y, vx: Math.cos(a) * v, vy: Math.sin(a) * v - 2, life: 1,
@@ -1124,6 +1270,7 @@ function burst(x, y, colors, n = 18, power = 5) {
   }
 }
 function coinShower(n = 60) {
+  n = Math.min(n, Math.max(0, 520 - particles.length)); // perf cap
   for (let i = 0; i < n; i++) {
     particles.push({ x: Math.random() * innerWidth, y: -20 - Math.random() * innerHeight * .6,
       vx: rand(-.8, .8), vy: rand(2, 5), life: 1, decay: rand(.004, .009),
@@ -1134,7 +1281,7 @@ function particleLoop() {
   pCtx.clearRect(0, 0, pCanvas.width, pCanvas.height);
   particles = particles.filter(p => p.life > 0);
   for (const p of particles) {
-    p.x += p.vx; p.y += p.vy; p.vy += .12; p.life -= p.decay;
+    p.x += p.vx; p.y += p.vy; p.vy += (p.g !== undefined ? p.g : .12); p.life -= p.decay;
     pCtx.globalAlpha = Math.max(0, p.life);
     pCtx.fillStyle = p.color;
     pCtx.beginPath(); pCtx.arc(p.x, p.y, Math.max(.1, p.size * p.life), 0, 7); pCtx.fill();
@@ -1149,6 +1296,18 @@ function cellCenter(i) {
   return { x: r.left + r.width / 2, y: r.top + r.height / 2 };
 }
 const WIN_COLORS = ['#FFC93C', '#00E5FF', '#FF2EC4', '#8B5CF6', '#fff'];
+/* Per-gem shatter palettes — every gem bleeds its own light (base realm) */
+const GEM_COLORS = {
+  crown:['#FFC93C','#FFE08A','#fff'],   diamond:['#bfe9ff','#fff','#00E5FF'],
+  orbgem:['#8B5CF6','#c4a8ff','#FF2EC4'], eye:['#2E5BFF','#7fa8ff','#fff'],
+  amber:['#FF9F1C','#FFC93C','#fff'],   topaz:['#2E86C4','#7fd0ff','#fff'],
+  aqua:['#00E5FF','#aef6ff','#fff'],    ruby:['#FF5470','#ff9aa9','#fff'],
+  emerald:['#34F5A4','#9bffd6','#fff'], garnet:['#FF2EC4','#ff8ade','#fff'],
+};
+function colorsFor(c) {
+  if (state.skin !== 'base') return skinColors();
+  return (c && GEM_COLORS[c.sym.id]) || skinColors();
+}
 function floatText(x, y, txt, cls = '') {
   const d = document.createElement('div');
   d.className = 'float-text ' + cls;
@@ -1336,6 +1495,22 @@ async function doSpin(opts = {}) {
   for (let c = 0; c < COLS; c++) setTimeout(() => SFX.drop(), speed(55) * c);
   await sleep(speed(440));
 
+  // near-cluster anticipation: exactly 7 of a kind visible? those gems wobble
+  {
+    const near = {};
+    grid.forEach((c, i) => { if (c && c.sym.pays) (near[c.sym.id] = near[c.sym.id] || []).push(i); });
+    const gridEl = $('grid');
+    let wobbled = false;
+    for (const id in near) if (near[id].length === 7) {
+      wobbled = true;
+      near[id].forEach(i => gridEl.children[i] && gridEl.children[i].classList.add('wobble'));
+    }
+    if (wobbled) {
+      tone(660, .12, 'triangle', .07); tone(880, .14, 'triangle', .06, .1);
+      setTimeout(() => { for (const el of gridEl.children) el.classList.remove('wobble'); }, 1100);
+    }
+  }
+
   // scatter anticipation
   let scatters = countSym('scatter');
   if (scatters === 3) {
@@ -1357,6 +1532,10 @@ async function doSpin(opts = {}) {
     badge.classList.add('on');
     badge.classList.toggle('hot', chain >= 3 && chain < 6);
     badge.classList.toggle('inferno', chain >= 6);
+    if (chain === 3 || chain === 6 || chain === 10) {
+      const m = $('machine');
+      m.classList.remove('chain-pulse'); void m.offsetWidth; m.classList.add('chain-pulse');
+    }
     if (chain >= 3) unlock('first_tumble');
     if (chain >= 6) unlock('chain6');
     if (chain >= 10) unlock('chain10');
@@ -1387,7 +1566,7 @@ async function doSpin(opts = {}) {
       gridEl.children[i].classList.remove('win-glow');
       gridEl.children[i].classList.add('shatter');
       const { x, y } = cellCenter(i);
-      burst(x, y, skinColors(), 8, 4);
+      burst(x, y, colorsFor(grid[i]), 8, 4);
     });
     state.forge = Math.min(FORGE_CAP, state.forge + cellsToShatter.size);
     updateForge();
@@ -1564,6 +1743,68 @@ async function endFreeSpins() {
 /* ============================================================
    TAKEOVER EVENTS — Zombie Outbreak / Broforce Raid
    ============================================================ */
+/* Staged entrance showpiece: color wash + realm actors + stamped title.
+   CSS/emoji only — zombie hands claw up from the soil, jets strafe the sky. */
+async function playTakeoverEntrance(id) {
+  const fx = $('takeover-fx');
+  fx.innerHTML = '';
+  fx.classList.add('on');
+  const fxCls = id === 'zombie' ? 'zmb' : 'brf';
+  const wash = document.createElement('div');
+  wash.className = 'to-wash go ' + fxCls;
+  fx.appendChild(wash);
+  if (id === 'zombie') {
+    for (let k = 0; k < 6; k++) {
+      const h = document.createElement('div');
+      h.className = 'to-hand';
+      h.textContent = k % 2 ? '🫱' : '🫲';
+      h.style.left = (5 + k * 16 + rand(-3, 3)) + '%';
+      h.style.fontSize = rand(9, 14) + 'vmin';
+      h.style.animationDelay = (k * .09) + 's';
+      fx.appendChild(h);
+    }
+  } else {
+    for (let k = 0; k < 3; k++) {
+      const j = document.createElement('div');
+      j.className = 'to-jet';
+      j.textContent = '🛩️';
+      j.style.top = (7 + k * 11) + '%';
+      j.style.animationDelay = (k * .16) + 's';
+      fx.appendChild(j);
+    }
+    const e = document.createElement('div');
+    e.className = 'to-jet';
+    e.textContent = '🦅';
+    e.style.top = '32%';
+    e.style.animationDelay = '.5s';
+    e.style.animationDuration = '1.6s';
+    fx.appendChild(e);
+  }
+  const stamp = document.createElement('div');
+  stamp.className = 'to-stamp ' + fxCls;
+  stamp.textContent = id === 'zombie' ? 'THE CRYPT CRACKS OPEN' : 'BROS INBOUND';
+  fx.appendChild(stamp);
+  await sleep(speed(1750));
+  fx.classList.remove('on');
+  fx.innerHTML = '';
+}
+/* Logo glitch-morph: scramble glyphs resolve left-to-right into the new realm name */
+let logoMorphTimer = null;
+function morphLogo(target) {
+  const el = $('logo');
+  const glyphs = '◆◇✦✧※#%@&';
+  clearInterval(logoMorphTimer);
+  let step = 0; const steps = 14;
+  logoMorphTimer = setInterval(() => {
+    step++;
+    const reveal = Math.floor(target.length * step / steps);
+    let out = '';
+    for (let i = 0; i < target.length; i++)
+      out += i < reveal ? target[i] : glyphs[Math.floor(Math.random() * glyphs.length)];
+    el.textContent = out;
+    if (step >= steps) { clearInterval(logoMorphTimer); el.textContent = target; }
+  }, 55);
+}
 async function startModeEvent(id) {
   const ev = SKINS[id].event;
   unlock(id);
@@ -1574,8 +1815,11 @@ async function startModeEvent(id) {
   SFX.thunder();
   $('shake-root').classList.add('shake');
   setTimeout(() => $('shake-root').classList.remove('shake'), 500);
+  const entrance = playTakeoverEntrance(id);
   await sleep(speed(650));
   applySkin();
+  morphLogo(SKINS[id].logo);
+  await entrance;
   await showInterstitial(ev.title, ev.body);
   SFX.bigwin();
   updateUI(); save();
@@ -1585,6 +1829,7 @@ async function endModeEvent() {
   state.skin = 'base';
   state.modeSpins = 0;
   applySkin();
+  morphLogo(SKINS.base.logo);
   await showInterstitial('✨ THE REALM RESTORES', `${old.logo} fades back into the prism…<br>Find another ${old.event.need}+ cluster to bring it back.`);
   updateUI(); save();
 }
@@ -1610,8 +1855,12 @@ function winTier(mult) {
 function bigWin(amount, mult) {
   return new Promise(res => {
     const ov = $('bigwin-overlay');
+    const tierIdx = mult >= 150 ? 3 : mult >= 80 ? 2 : mult >= 40 ? 1 : 0;
+    ov.classList.remove('t0', 't1', 't2', 't3');
     $('bigwin-tier').textContent = winTier(mult);
-    ov.classList.add('active');
+    ov.classList.add('active', 't' + tierIdx);
+    const ring = $('bigwin-ring');
+    ring.classList.remove('go'); void ring.offsetWidth; ring.classList.add('go');
     $('shake-root').classList.add('shake');
     setTimeout(() => $('shake-root').classList.remove('shake'), 500);
     SFX.bigwin();
@@ -1622,10 +1871,11 @@ function bigWin(amount, mult) {
     }, 450);
     if (navigator.vibrate) navigator.vibrate([60, 40, 60, 40, 120]);
     const dur = state.turbo ? 900 : 2200, t0 = performance.now();
-    let done = false;
+    let done = false, lastTick = 0;
     function frame(t) {
       const p = Math.min(1, (t - t0) / dur);
       $('bigwin-amount').textContent = fmt(amount * (1 - Math.pow(1 - p, 3)));
+      if (p < 1 && t - lastTick > 90) { lastTick = t; SFX.tick(); } // count-up ticks
       if (p < 1 && !done) requestAnimationFrame(frame);
       else $('bigwin-amount').textContent = fmt(amount);
     }
@@ -1633,7 +1883,8 @@ function bigWin(amount, mult) {
     function close() {
       done = true;
       clearInterval(burster);
-      ov.classList.remove('active');
+      ov.classList.remove('active', 't0', 't1', 't2', 't3');
+      ring.classList.remove('go');
       ov.removeEventListener('click', close);
       $('win-message').textContent = winTier(mult);
       $('win-amount').textContent = '+' + fmt(amount);
@@ -2099,7 +2350,11 @@ function addHistory(type, amount, chain) {
 /* ============================================================
    UI RENDERING
    ============================================================ */
+function bumpEl(el, cls = 'bump') { el.classList.remove(cls); void el.offsetWidth; el.classList.add(cls); }
+let shownCoins = null;
 function updateUI() {
+  if (shownCoins !== null && state.coins > shownCoins) bumpEl($('coins-val'), 'gold-pulse');
+  shownCoins = state.coins;
   $('coins-val').textContent = fmt(state.coins);
   $('last-win-val').textContent = lastWin > 0 ? '+' + fmt(lastWin) : '—';
   $('level-val').textContent = state.level;
@@ -2138,12 +2393,22 @@ function updateModeBanner() {
   if (active) b.textContent = `${SKINS[state.skin].event.title} · ${state.modeSpins > 0 ? state.modeSpins + ' SPINS LEFT' : 'FINAL SPIN'} · ALL WINS ×2`;
 }
 
+let forgeWasReady = false;
 function updateForge() {
   $('forge-fill').style.width = (state.forge / FORGE_CAP * 100) + '%';
   const btn = $('forge-btn');
   const ready = state.forge >= FORGE_CAP;
+  // glow surge as the forge approaches full
+  $('forge-fill').classList.toggle('surge', !ready && state.forge >= FORGE_CAP * .8);
   btn.classList.toggle('ready', ready);
   btn.textContent = ready ? '⚒️ SMELT!' : `${state.forge}/${FORGE_CAP}`;
+  if (ready && !forgeWasReady) { // forge-ready celebration
+    const r = btn.getBoundingClientRect();
+    burst(r.left + r.width / 2, r.top + r.height / 2, ['#FFC93C', '#FF9F1C', '#fff'], 22, 6);
+    tone(880, .3, 'triangle', .1); tone(1320, .4, 'triangle', .09, .12);
+    toast('⚒️ THE FORGE IS READY — smelt your boon!');
+  }
+  forgeWasReady = ready;
 }
 function renderPaytable() {
   let html = '';
@@ -2207,8 +2472,8 @@ function renderHistory() {
    CONTROLS & INIT
    ============================================================ */
 $('spin-btn').onclick = () => { audio(); if (spinning) { autoSpin = false; return; } doSpin(); };
-$('bet-down').onclick = () => { if (spinning) return; SFX.click(); state.betIdx = Math.max(0, state.betIdx - 1); updateUI(); save(); };
-$('bet-up').onclick = () => { if (spinning) return; SFX.click(); state.betIdx = Math.min(BETS.length - 1, state.betIdx + 1); updateUI(); save(); };
+$('bet-down').onclick = () => { if (spinning) return; SFX.click(); state.betIdx = Math.max(0, state.betIdx - 1); updateUI(); bumpEl($('bet-val')); save(); };
+$('bet-up').onclick = () => { if (spinning) return; SFX.click(); state.betIdx = Math.min(BETS.length - 1, state.betIdx + 1); updateUI(); bumpEl($('bet-val')); save(); };
 $('ante-btn').onclick = () => { if (spinning) return; SFX.click(); state.ante = !state.ante; updateUI(); save(); };
 $('auto-btn').onclick = () => {
   SFX.click(); autoSpin = !autoSpin; updateUI();
@@ -2272,6 +2537,47 @@ setInterval(() => { // ambient jackpot drift so the strip always feels alive
   $('jp-minor-val').textContent = fmt(state.jp.minor);
   $('jp-mini-val').textContent = fmt(state.jp.mini);
 }, 1400);
+/* ---- ambient life per realm: shooting stars / flybys / lightning & embers ---- */
+function spawnShootingStar() {
+  const d = document.createElement('div');
+  d.className = 'shooting-star';
+  d.style.left = rand(8, 75) + 'vw'; d.style.top = rand(2, 32) + 'vh';
+  $('ambient').appendChild(d);
+  setTimeout(() => d.remove(), 1400);
+}
+function spawnFlyby() {
+  const d = document.createElement('div');
+  d.className = 'amb-fly';
+  d.textContent = Math.random() < .6 ? '🦅' : '🚁';
+  d.style.top = rand(3, 22) + '%';
+  const dur = rand(8, 13);
+  d.style.animationDuration = dur + 's';
+  $('ambient').appendChild(d);
+  setTimeout(() => d.remove(), dur * 1000 + 200);
+}
+function spawnEmbers() {
+  if (particles.length > 420) return;
+  for (let k = 0; k < 6; k++) particles.push({
+    x: Math.random() * innerWidth, y: innerHeight + 8,
+    vx: rand(-.25, .25), vy: rand(-1.3, -.5), g: -.008,
+    life: 1, decay: rand(.004, .008), size: rand(1.4, 3),
+    color: Math.random() < .5 ? '#FF8C1A' : '#FF1F1F',
+  });
+}
+function bgLightning() {
+  const b = $('bg-bolt');
+  b.classList.remove('go'); void b.offsetWidth; b.classList.add('go');
+}
+setInterval(() => {
+  if (document.hidden) return;
+  if ($('ambient').childElementCount > 8) return; // cap ambient actors
+  if (state.skin === 'base') { if (Math.random() < .5) spawnShootingStar(); }
+  else if (state.skin === 'bro') { if (Math.random() < .55) spawnFlyby(); }
+  else if (state.skin === 'zombie') {
+    if (Math.random() < .4) bgLightning();
+    if (Math.random() < .6) spawnEmbers();
+  }
+}, 4600);
 setInterval(() => { // idle gem sparkles keep the board alive
   if (spinning || document.hidden) return;
   const cells = $('grid').children;
