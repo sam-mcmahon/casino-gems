@@ -286,14 +286,15 @@ body{
   background:var(--panel);border:1px solid var(--panel-edge);color:var(--dim);cursor:pointer;
 }
 #ante-btn.on{color:#1a0e00;background:linear-gradient(135deg,var(--gold),var(--gold2));border-color:var(--gold);box-shadow:0 0 12px rgba(255,201,60,.5)}
-#mode-row{display:flex;gap:4px}
-.mode-btn{
-  font-size:.58rem;font-weight:700;letter-spacing:.08em;padding:4px 7px;border-radius:8px;
-  background:var(--panel);border:1px solid var(--panel-edge);color:var(--dim);cursor:pointer;
-  font-family:'Rajdhani',sans-serif;
+#mode-banner{
+  display:none;justify-content:center;align-items:center;gap:12px;
+  margin-bottom:8px;padding:5px 10px;border-radius:10px;
+  background:linear-gradient(90deg,rgba(255,140,26,.14),rgba(255,46,46,.28),rgba(255,140,26,.14));
+  border:1px solid var(--magenta);
+  font-family:'Orbitron',sans-serif;font-weight:700;font-size:.74rem;color:var(--gold);
+  animation:fsGlow .8s ease-in-out infinite alternate;
 }
-.mode-btn.on{color:#fff;border-color:var(--good);box-shadow:0 0 12px rgba(52,245,164,.5);background:linear-gradient(135deg,rgba(52,245,164,.3),rgba(0,0,0,.4))}
-.mode-btn.hidden{display:none}
+#mode-banner.on{display:flex}
 
 #spin-btn{
   width:108px;height:108px;border-radius:50%;border:3px solid rgba(255,255,255,.5);cursor:pointer;
@@ -766,6 +767,7 @@ body.bro #version-footer{color:#0d3a5e}
 
   <div id="machine">
     <div id="fs-banner"><span>✨ FREE SPINS <span id="fs-count">0</span></span><span id="fs-mult">×0</span></div>
+    <div id="mode-banner"></div>
     <div id="grid-wrap">
       <div id="tumble-badge">TUMBLE ×1</div>
       <div id="grid"></div>
@@ -785,10 +787,6 @@ body.bro #version-footer{color:#0d3a5e}
         <button class="bet-adj" id="bet-up">+</button>
       </div>
       <button id="ante-btn">ANTE ×1.25</button>
-      <div id="mode-row">
-        <button id="zombie-btn" class="mode-btn hidden">🧟 ZOMBIE</button>
-        <button id="bro-btn" class="mode-btn hidden">💪 BRO</button>
-      </div>
     </div>
     <button id="spin-btn">SPIN<span class="sub">HOLD A LUCKY GEM</span></button>
     <div id="side-btns">
@@ -813,8 +811,9 @@ body.bro #version-footer{color:#0d3a5e}
   </div>
 
   <details id="version-footer">
-    <summary>v1.3 · PRISMFALL — Gem Cascade Casino</summary>
+    <summary>v1.4 · PRISMFALL — Gem Cascade Casino</summary>
     <div id="changelog">
+      <b>v1.4</b> — Takeover modes are now SPECIAL EVENTS, not toggles: land a winning cluster of 10+ 🟢 Emerald Chips to trigger a ZOMBIE OUTBREAK, or 10+ 🔺 Ruby Shards to trigger a BROFORCE RAID. Each takes over the whole game for 10 spins with different winning — all wins ×2, plus 25% reanimation odds (outbreak) or per-spin strafing runs that convert gems toward premium clusters (raid). Countdown banner, lightning entry, "realm restores" exit.<br>
       <b>v1.3</b> — TOTAL takeover modes: 💪 BROFALL is now full pixel-art jungle warfare (day-sky backdrop with drifting clouds, chunky square pixel UI, Press Start 2P type, BROTALITY win tiers) and 🧟 GRIMFALL melts into a blood-soaked crypt-lab (dripping Nosifer logo, flickering neon, surging Frankenstein machine, MONSTER WIN tiers). New IT'S ALIVE mechanic: in either mode a dead spin can be struck by lightning / an airstrike and reanimated into a forced cluster. Skin-tinted particles + thunder SFX. 27 achievements.<br>
       <b>v1.2</b> — Excitement overhaul: floating win numbers over every cluster, chain heat-up effects (tumble badge catches fire), charged-gem value fly-ups, win streak celebrations, jackpot shimmer sweeps, idle gem sparkles, pulsing spin button with cascade spinner ring, radial big-win rays, richer synth sounds, snappier tumble timing. Desktop machine now scales to viewport height — no more scroll/overlap on the spin bar. NEW unlockable takeover modes: 🧟 ZOMBIE (survive 66 spins) and 💪 BROFORCE (reach level 4) — full reskins with their own symbols, palettes and attitude.<br>
       <b>v1.1</b> — Mobile &amp; desktop QA pass: sticky spin bar that clears Safari's toolbar, widescreen two-column desktop layout, bigger touch targets, iOS web-app meta. Free spins and Hold &amp; Win respins are now player-triggered (only AUTO automates). New 💳 Gem Bank free token reloads via the Gems card.<br>
@@ -913,8 +912,8 @@ const ACHIEVEMENTS = [
   { id:'level10',      e:'🌟', n:'Constellation',   d:'Reach level 10' },
   { id:'spins1000',    e:'🔁', n:'Marathon',        d:'Play 1,000 spins' },
   { id:'daily5',       e:'📅', n:'Regular',         d:'Claim 5 daily wheels' },
-  { id:'zombie',       e:'🧟', n:'Graveyard Shift', d:'Unlock Zombie Mode (66 spins)' },
-  { id:'bro',          e:'💪', n:'HELL YEAH',       d:'Unlock Broforce Mode (level 4)' },
+  { id:'zombie',       e:'🧟', n:'Graveyard Shift', d:'Trigger a Zombie Outbreak (10+ 🟢 cluster)' },
+  { id:'bro',          e:'💪', n:'HELL YEAH',       d:'Trigger a Broforce Raid (10+ 🔺 cluster)' },
   { id:'reanimated',   e:'⚡', n:'Reanimator',      d:'Witness a dead spin come back to life' },
 ];
 
@@ -931,6 +930,8 @@ const SKINS = {
     tiers: ['BLOODY WIN', 'MONSTER WIN', 'UNDEAD EPIC', 'IT’S ALIVE!'],
     colors: ['#FF1F1F', '#9DFF3B', '#FF8C1A', '#fff', '#7a0808'],
     revive: { chance: .10, fx: 'zmb', text: '⚡ IT’S ALIVE!', toast: '🧟⚡ The lab surges — your dead spin is REANIMATED!' },
+    event: { sym: 'emerald', need: 10, spins: 10, title: '🧟 ZOMBIE OUTBREAK',
+      body: 'The Walkers cracked the crypt!<br><b>10 spins of GRIMFALL</b> — all wins <b style="color:var(--gold)">×2</b> and dead spins reanimate 25% of the time.' },
     syms: {
       crown:['💀','Skull Crown'], diamond:['🧠','Brain Gem'], orbgem:['🧪','Toxic Vial'],
       eye:['👁️','Evil Eye'], amber:['🕷️','Widow Spider'], topaz:['🦇','Night Bat'],
@@ -945,6 +946,8 @@ const SKINS = {
     tiers: ['BIG BRO WIN', 'MEGA BRO WIN', 'EPIC FREEDOM', 'BROTALITY'],
     colors: ['#FF3B2E', '#FFD24D', '#FF8C1A', '#fff', '#2E5BFF'],
     revive: { chance: .08, fx: 'brf', text: '💥 BRO-STRIKE!', toast: '💪🛩️ AIRSTRIKE INBOUND — freedom rerolls your spin!' },
+    event: { sym: 'ruby', need: 10, spins: 10, title: '💪 BROFORCE RAID',
+      body: 'That steak cluster summoned THE BROS!<br><b>10 spins of BROFALL</b> — strafing runs convert gems every spin and all wins are <b style="color:var(--gold)">×2</b>.' },
     syms: {
       crown:['🦅','Freedom Eagle'], diamond:['🗽','Lady Liberty'], orbgem:['💣','Bro Bomb'],
       eye:['🎖️','War Medal'], amber:['🧨','Dynamite'], topaz:['🚁','Attack Chopper'],
@@ -975,7 +978,7 @@ const state = {
   jp: { ...JP_SEED },
   fs: 0, fsTotal: 0, fsMult: 0,
   achievements: {}, dailyClaims: 0, lastDaily: 0,
-  skin: 'base', skinUnlocks: { zombie: false, bro: false },
+  skin: 'base', modeSpins: 0,
   stats: { spins: 0, wagered: 0, won: 0, biggestWin: 0, biggestChain: 0, bonuses: 0, jackpots: 0 },
   history: [],
   sound: true, turbo: false,
@@ -1261,9 +1264,14 @@ async function doSpin(opts = {}) {
   $('win-amount').textContent = '';
   $('tumble-badge').classList.remove('on');
 
+  let pendingEvent = null, eventEnding = false;
   if (!isFree) {
     state.coins -= cost;
     state.stats.wagered += cost;
+    if (state.modeSpins > 0) {
+      state.modeSpins--;
+      if (state.modeSpins === 0) eventEnding = true;
+    }
     // progressive jackpot growth
     state.jp.mini  += cost * .003; state.jp.minor += cost * .004;
     state.jp.major += cost * .005; state.jp.grand += cost * .008;
@@ -1288,6 +1296,19 @@ async function doSpin(opts = {}) {
       grid[i] = { sym: SPECIALS.charge, orbVal: weightedPick(CHARGE_VALUES) };
     }
     toast('☄️ METEOR SHOWER — Charged Gems rain down!');
+  }
+  // Broforce Raid: every event spin gets a strafing run toward a premium cluster
+  if (!isFree && state.modeSpins > 0 && state.skin === 'bro') {
+    const prem = SYMBOLS[Math.floor(Math.random() * 4)];
+    let converted = 0;
+    const idxs = [...Array(CELLS).keys()].sort(() => Math.random() - .5);
+    for (const i of idxs) {
+      if (converted >= 3) break;
+      const c = grid[i];
+      if (c && c.sym.pays && c.sym.id !== prem.id) { grid[i] = { sym: prem }; converted++; }
+    }
+    const f = $('flash'); f.className = ''; void f.offsetWidth; f.classList.add('go', 'brf');
+    toast(`🛩️ STRAFING RUN — ${converted} gems become ${skinE(prem)} ${skinName(prem)}!`);
   }
   renderGrid(true);
   for (let c = 0; c < COLS; c++) setTimeout(() => SFX.drop(), speed(55) * c);
@@ -1324,6 +1345,11 @@ async function doSpin(opts = {}) {
       tumbleWin += w.pay;
       w.cells.forEach(i => cellsToShatter.add(i));
       if (w.sym.id === 'crown' && w.count >= 12) unlock('crown12');
+      // takeover event triggers: big clusters of the modes' signature gems
+      if (!isFree && state.modeSpins === 0 && !eventEnding) {
+        if (w.sym.id === SKINS.zombie.event.sym && w.count >= SKINS.zombie.event.need) pendingEvent = 'zombie';
+        if (w.sym.id === SKINS.bro.event.sym && w.count >= SKINS.bro.event.need) pendingEvent = 'bro';
+      }
       const cc = clusterCenter(w.cells);
       floatText(cc.x, cc.y, '+' + fmt(w.pay), w.pay >= bet() * 5 ? 'big' : '');
     }
@@ -1355,7 +1381,8 @@ async function doSpin(opts = {}) {
 
   // ---- skin revive: lightning / airstrike resurrects a dead spin ----
   const revive = SKINS[state.skin].revive;
-  if (!isFree && tumbleWin === 0 && revive && Math.random() < revive.chance) {
+  const reviveChance = revive ? (state.skin === 'zombie' && state.modeSpins >= 0 ? .25 : revive.chance) : 0;
+  if (!isFree && tumbleWin === 0 && revive && Math.random() < reviveChance) {
     unlock('reanimated');
     const f = $('flash');
     f.className = '';
@@ -1403,6 +1430,12 @@ async function doSpin(opts = {}) {
   }
 
   // ---- scatter pays & free spins trigger ----
+  // ---- takeover event: all wins ×2 while the realm is taken over ----
+  if (totalWin > 0 && state.skin !== 'base' && state.modeSpins >= 0 && SKINS[state.skin].event) {
+    totalWin *= 2;
+    floatText(innerWidth / 2, innerHeight * .42, state.skin === 'zombie' ? '🧟 UNDEAD ×2' : '💪 FREEDOM ×2', 'hot big');
+  }
+
   scatters = countSym('scatter');
   if (scatters >= 4) {
     const scatPay = (scatters >= 6 ? 100 : scatters === 5 ? 5 : 3) * bet();
@@ -1466,6 +1499,10 @@ async function doSpin(opts = {}) {
     openGemCutter();
   }
 
+  // ---- takeover events: end the old realm, then open a new one ----
+  if (eventEnding) await endModeEvent();
+  if (pendingEvent && state.modeSpins === 0 && state.skin === 'base') await startModeEvent(pendingEvent);
+
   spinning = false;
   $('spin-btn').classList.remove('spinning');
   // free spins are player-triggered: press SPIN for each one (AUTO still works)
@@ -1502,6 +1539,34 @@ async function endFreeSpins() {
   state.fsMult = 0;
   updateUI(); save();
 }
+/* ============================================================
+   TAKEOVER EVENTS — Zombie Outbreak / Broforce Raid
+   ============================================================ */
+async function startModeEvent(id) {
+  const ev = SKINS[id].event;
+  unlock(id);
+  state.stats.bonuses++;
+  state.skin = id;
+  state.modeSpins = ev.spins;
+  const f = $('flash'); f.className = ''; void f.offsetWidth; f.classList.add('go', SKINS[id].revive.fx);
+  SFX.thunder();
+  $('shake-root').classList.add('shake');
+  setTimeout(() => $('shake-root').classList.remove('shake'), 500);
+  await sleep(speed(650));
+  applySkin();
+  await showInterstitial(ev.title, ev.body);
+  SFX.bigwin();
+  updateUI(); save();
+}
+async function endModeEvent() {
+  const old = SKINS[state.skin];
+  state.skin = 'base';
+  state.modeSpins = 0;
+  applySkin();
+  await showInterstitial('✨ THE REALM RESTORES', `${old.logo} fades back into the prism…<br>Find another ${old.event.need}+ cluster to bring it back.`);
+  updateUI(); save();
+}
+
 function showInterstitial(title, html) {
   return new Promise(res => {
     $('mg-title').textContent = title;
@@ -2034,25 +2099,9 @@ function updateUI() {
   else sb.innerHTML = `SPIN<span class="sub">${state.ante ? 'ANTE ' + fmt(betCost()) : 'GOOD LUCK'}</span>`;
   renderStats();
   updateForge();
-  checkSkinUnlocks();
+  updateModeBanner();
 }
-/* ---------- Unlockable modes (Zombie / Broforce) ---------- */
-function checkSkinUnlocks() {
-  if (!state.skinUnlocks.zombie && state.stats.spins >= 66) {
-    state.skinUnlocks.zombie = true;
-    unlock('zombie');
-    toast(SKINS.zombie.unlockText);
-  }
-  if (!state.skinUnlocks.bro && state.level >= 4) {
-    state.skinUnlocks.bro = true;
-    unlock('bro');
-    toast(SKINS.bro.unlockText);
-  }
-  $('zombie-btn').classList.toggle('hidden', !state.skinUnlocks.zombie);
-  $('bro-btn').classList.toggle('hidden', !state.skinUnlocks.bro);
-  $('zombie-btn').classList.toggle('on', state.skin === 'zombie');
-  $('bro-btn').classList.toggle('on', state.skin === 'bro');
-}
+/* ---------- Takeover skin application (events drive this) ---------- */
 function applySkin() {
   document.body.className = SKINS[state.skin].cls;
   $('logo').textContent = SKINS[state.skin].logo;
@@ -2060,14 +2109,11 @@ function applySkin() {
   renderGrid(false);
   renderPaytable();
 }
-function toggleSkin(id) {
-  if (spinning) { toast('Finish the spin first!'); return; }
-  state.skin = state.skin === id ? 'base' : id;
-  applySkin();
-  if (state.skin === 'zombie') { tone(98, .9, 'sawtooth', .1, 0, -40); toast('🧟 The crypt takes over… everything is cursed now.'); }
-  else if (state.skin === 'bro') { [392, 523, 659, 784].forEach((f, i) => tone(f, .22, 'square', .1, i * .1)); toast('💪 BROFORCE ENGAGED. FREEDOM INTENSIFIES.'); }
-  else toast('💎 Back to the prism realm.');
-  updateUI(); save();
+function updateModeBanner() {
+  const b = $('mode-banner');
+  const active = state.skin !== 'base' && SKINS[state.skin].event;
+  b.classList.toggle('on', !!active);
+  if (active) b.textContent = `${SKINS[state.skin].event.title} · ${state.modeSpins > 0 ? state.modeSpins + ' SPINS LEFT' : 'FINAL SPIN'} · ALL WINS ×2`;
 }
 
 function updateForge() {
@@ -2092,7 +2138,9 @@ function renderPaytable() {
     <b>🌈 Free Spins:</b> every applied charge adds to a multiplier that <b>persists for the whole bonus</b>. 3+ scatters retrigger +5.<br><br>
     <b>🪙 Hold &amp; Win:</b> 6+ nuggets lock the grid into Lightning Respins with MINI/MINOR/MAJOR coins. Fill all 30 cells for the <b>GRAND</b>.<br><br>
     <b>⛏️ The Forge:</b> every gem you shatter feeds the forge. A full forge smelts a boon — charged spins, instant bonuses, the Gem Mine, the Crystal Wheel.<br><br>
-    <b>ANTE ×1.25:</b> raises your bet 25% and boosts scatter &amp; nugget odds by 50%.</div>`;
+    <b>ANTE ×1.25:</b> raises your bet 25% and boosts scatter &amp; nugget odds by 50%.<br><br>
+    <b>🧟 ZOMBIE OUTBREAK:</b> a winning cluster of <b>10+ ${skinE(SYMBOLS[8])} ${skinName(SYMBOLS[8])}</b> cracks open the crypt — GRIMFALL takes over for 10 spins: all wins ×2, dead spins reanimate 25% of the time.<br><br>
+    <b>💪 BROFORCE RAID:</b> a winning cluster of <b>10+ ${skinE(SYMBOLS[7])} ${skinName(SYMBOLS[7])}</b> summons the bros — BROFALL takes over for 10 spins: strafing runs convert gems every spin, all wins ×2.</div>`;
   $('panel-pay').innerHTML = html;
 }
 function renderStats() {
@@ -2150,8 +2198,6 @@ $('sound-btn').onclick = () => { state.sound = !state.sound; SFX.click(); update
 $('buy-btn').onclick = openBuyMenu;
 $('forge-btn').onclick = openForge;
 $('gems-card').onclick = () => openBank(false);
-$('zombie-btn').onclick = () => { audio(); toggleSkin('zombie'); };
-$('bro-btn').onclick = () => { audio(); toggleSkin('bro'); };
 $('level-card').onclick = () => toast(`⭐ Level ${state.level} · ${fmt(Math.floor(state.xp))}/${fmt(xpNeeded(state.level))} XP<br><span style="color:var(--dim);font-size:.75rem">Earn XP by wagering and winning. Level-ups pay gem rewards.</span>`);
 
 document.querySelectorAll('.tab-btn').forEach(b => b.onclick = () => {
@@ -2183,7 +2229,8 @@ window.addEventListener('resize', sizeCanvases);
 
 /* ---- boot ---- */
 load();
-if (!SKINS[state.skin] || (state.skin !== 'base' && !state.skinUnlocks[state.skin])) state.skin = 'base';
+// takeover skins persist only while their event is running
+if (!SKINS[state.skin] || (state.skin !== 'base' && !(state.modeSpins > 0))) { state.skin = 'base'; state.modeSpins = 0; }
 document.body.className = SKINS[state.skin].cls;
 $('logo').textContent = SKINS[state.skin].logo;
 $('subtitle').textContent = SKINS[state.skin].subtitle;
