@@ -4,10 +4,12 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <meta name="theme-color" content="#06030f">
+<meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="PRISMFALL">
 <title>PRISMFALL — Gem Cascade Casino</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>💎</text></svg>">
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@500;600;700&family=Press+Start+2P&family=Creepster&family=Nosifer&display=swap');
 :root{
@@ -978,8 +980,9 @@ body.bro #machine-sheen{display:none}
   </div>
 
   <details id="version-footer">
-    <summary>v1.7.1 · PRISMFALL — Gem Cascade Casino</summary>
+    <summary>v1.7.2 · PRISMFALL — Gem Cascade Casino</summary>
     <div id="changelog">
+      <b>v1.7.2</b> — Stability: fixed a freeze when a huge win granted many levels at once (level-ups now batch into one celebration), capped concurrent audio voices, spin loop self-recovers from any error, added favicon and modern mobile meta.<br>
       <b>v1.7.1</b> — Takeover pacing: after a Zombie Outbreak / Broforce Raid ends, the realm stabilizes for 18 spins before another can trigger — takeovers now run ~1/6 of playtime instead of ~1/3.<br>
       <b>v1.7</b> — The Loren &amp; Ellen patch: faster spinner (cascade rhythm ~25% snappier, turbo even quicker) and a sim-validated generosity tune — base hit rate 18%→30%, base RTP 38%→84%, free spins ~1/73, Hold &amp; Win ~1/101, takeover events ~1/32 spins, forge boons every ~33 spins, more Charged Gems on the board.<br>
       <b>v1.6</b> — Claude Design game-feel pass: takeover entrances are now staged showpieces (color wash sweep, zombie hands clawing from the soil / jet squadron strafing the sky, realm title stamp, logo glitch-morphs letter by letter). Ambient life per realm — prismatic sheen sweeps the machine + shooting stars (PRISMFALL), drifting fog, background lightning and rising embers (GRIMFALL), eagle/chopper flybys (BROFALL). Juicier cascades: squash-and-stretch landings, every gem shatters in its own colors, 7-of-a-kind near-miss wobble, machine pulse on chain milestones. Win ladder polish: tier-specific big-win choreography with shockwave rings (LEGENDARY throbs forever), count-up tick sounds, gold pulse on your balance. Micro-feel: bet bump, forge surge glow at 80% with a ready celebration, particle cap for buttery mobile perf. Performance: removed animated mega-blurs and all always-on box-shadow/filter animations (transform/opacity only now), particle engine sleeps when idle, lighter dock blur, reduced-motion support — silky on mobile.<br>
@@ -1197,8 +1200,11 @@ function audio() {
   if (AC && AC.state === 'suspended') AC.resume();
   return AC;
 }
+let activeTones = 0;
 function tone(freq, dur = .15, type = 'sine', vol = .14, when = 0, slide = 0) {
   if (!state.sound) return; const ac = audio(); if (!ac) return;
+  if (activeTones > 48) return; // safety valve: never flood the audio thread
+  activeTones++;
   const t = ac.currentTime + when;
   const o = ac.createOscillator(), g = ac.createGain();
   o.type = type; o.frequency.setValueAtTime(freq, t);
@@ -1206,6 +1212,7 @@ function tone(freq, dur = .15, type = 'sine', vol = .14, when = 0, slide = 0) {
   g.gain.setValueAtTime(vol, t);
   g.gain.exponentialRampToValueAtTime(.0001, t + dur);
   o.connect(g); g.connect(ac.destination);
+  o.onended = () => { activeTones--; };
   o.start(t); o.stop(t + dur + .02);
 }
 function noiseBurst(dur = .2, vol = .12, when = 0, hp = 1200) {
@@ -1447,6 +1454,7 @@ function forceCluster() {
    ============================================================ */
 async function doSpin(opts = {}) {
   if (spinning) return;
+  try {
   const isFree = state.fs > 0;
   const cost = isFree || opts.free ? 0 : betCost();
   if (!isFree && state.coins < cost) { autoSpin = false; updateUI(); openBank(true); return; }
@@ -1728,6 +1736,14 @@ async function doSpin(opts = {}) {
   if (autoSpin) {
     await sleep(speed(500));
     if (autoSpin && !spinning) return doSpin();
+  }
+  } catch (err) {
+    console.error('spin recovered:', err);
+    toast('⚠️ Hiccup recovered — spin again!');
+  } finally {
+    spinning = false;
+    $('spin-btn').classList.remove('spinning');
+    updateUI();
   }
 }
 
@@ -2334,14 +2350,20 @@ function openBank(broke = false) {
 function xpNeeded(lvl) { return Math.floor(100 * Math.pow(lvl, 1.5)); }
 function gainXP(amount) {
   state.xp += amount;
+  let gained = 0, reward = 0;
   while (state.xp >= xpNeeded(state.level)) {
     state.xp -= xpNeeded(state.level);
     state.level++;
-    const reward = 100 * state.level;
+    gained++;
+    reward += 100 * state.level;
+  }
+  if (gained > 0) {
     state.coins += reward;
     SFX.bigwin();
-    coinShower(40);
-    toast(`⭐ LEVEL ${state.level}! Reward: +${fmt(reward)} gems`);
+    coinShower(Math.min(60, 30 + gained * 10));
+    toast(gained === 1
+      ? `⭐ LEVEL ${state.level}! Reward: +${fmt(reward)} gems`
+      : `⭐ +${gained} LEVELS → Lv.${state.level}! Rewards: +${fmt(reward)} gems`);
     if (state.level >= 5) unlock('level5');
     if (state.level >= 10) unlock('level10');
   }
