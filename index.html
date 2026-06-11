@@ -9,7 +9,7 @@
 <meta name="apple-mobile-web-app-title" content="PRISMFALL">
 <title>PRISMFALL — Gem Cascade Casino</title>
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@500;600;700&family=Press+Start+2P&family=Creepster&family=Nosifer&display=swap');
 :root{
   --bg0:#06030f;
   --bg1:#0c0620;
@@ -586,35 +586,142 @@ body{
 }
 
 /* ============================================================
-   UNLOCKABLE MODES — full-takeover reskins via CSS variables
+   LIGHTNING / AIRSTRIKE FLASH (revive feature)
+   ============================================================ */
+#flash{position:fixed;inset:0;z-index:75;pointer-events:none;opacity:0}
+#flash.go{animation:flashAnim .75s ease-out}
+#flash.zmb{background:radial-gradient(circle at 50% 15%,rgba(255,255,255,.95),rgba(157,255,59,.5) 45%,transparent 80%)}
+#flash.brf{background:radial-gradient(circle at 50% 70%,rgba(255,255,255,.95),rgba(255,140,26,.6) 45%,transparent 80%)}
+@keyframes flashAnim{0%{opacity:0}8%{opacity:1}25%{opacity:.25}38%{opacity:.9}100%{opacity:0}}
+
+/* ============================================================
+   🧟 ZOMBIE MODE — blood-soaked COD crypt × Frankenstein lab
    ============================================================ */
 body.zombie{
-  --cyan:#8AFF4F; --magenta:#FF3B1F; --gold:#FFB000; --gold2:#E07000;
-  --violet:#4E9C2A; --good:#C8FF4F; --danger:#FF2222;
-  --bg0:#040a03; --bg1:#0a1607;
-  --panel:rgba(13,30,10,.85); --panel-edge:rgba(138,255,79,.32);
-  --text:#E2FFD8; --dim:#8FBE7E;
+  --cyan:#9DFF3B; --magenta:#FF1F1F; --gold:#FF8C1A; --gold2:#D14E00;
+  --violet:#8a1414; --good:#9DFF3B; --danger:#FF1F1F;
+  --bg0:#070302; --bg1:#120505;
+  --panel:rgba(28,8,8,.88); --panel-edge:rgba(255,31,31,.4);
+  --text:#FFE2CE; --dim:#B58875;
 }
-body.zombie #machine{background:linear-gradient(160deg,#15330d,#050f04 55%,#1a2a06)}
-body.zombie #machine{box-shadow:0 0 0 2px rgba(138,255,79,.45),0 0 35px rgba(138,255,79,.2),inset 0 0 40px rgba(0,0,0,.65)}
-body.zombie .cell{border-color:rgba(138,255,79,.2);background:linear-gradient(145deg,rgba(138,255,79,.06),rgba(0,0,0,.1))}
-body.zombie #spin-btn{background:radial-gradient(circle at 32% 28%,#b6ff5e,#4e9c2a 45%,#143309 90%);box-shadow:0 0 26px rgba(138,255,79,.55),inset 0 -6px 14px rgba(0,0,0,.4)}
-body.zombie #logo{filter:drop-shadow(0 0 14px rgba(138,255,79,.6))}
-body.zombie #mg-box{background:linear-gradient(165deg,#15330d,#050f04 60%,#102a06)}
+body.zombie #aurora{background:#070302}
+body.zombie #aurora::before{
+  background:radial-gradient(circle,#FF1F1F,transparent 60%);opacity:.3;
+  animation:neonFlicker 4.5s steps(1,end) infinite;
+}
+body.zombie #aurora::after{
+  background:radial-gradient(circle,#9DFF3B,transparent 60%);opacity:.14;
+  animation:auroraB 18s ease-in-out infinite alternate;
+}
+@keyframes neonFlicker{
+  0%,100%{opacity:.3}7%{opacity:.08}9%{opacity:.34}11%{opacity:.1}13%{opacity:.3}
+  54%{opacity:.3}56%{opacity:.05}58%{opacity:.32}80%{opacity:.22}
+}
+body.zombie #logo{
+  font-family:'Nosifer',cursive;font-weight:400;font-size:clamp(1.2rem,5.6vw,1.9rem);
+  background:linear-gradient(180deg,#FF6A4A 5%,#FF1F1F 45%,#6E0202 95%);
+  -webkit-background-clip:text;background-clip:text;
+  filter:drop-shadow(0 0 16px rgba(255,31,31,.7));
+  animation:logoFlow 7s linear infinite,neonFlicker 6s steps(1,end) infinite;
+}
+body.zombie #subtitle{font-family:'Creepster',cursive;letter-spacing:.5em;color:#9DFF3B;text-shadow:0 0 8px rgba(157,255,59,.6)}
+body.zombie #machine{
+  background:linear-gradient(160deg,#240808,#0b0202 55%,#1c0404);
+  box-shadow:0 0 0 2px rgba(255,31,31,.55),0 0 30px rgba(255,31,31,.25),
+    inset 0 0 60px rgba(0,0,0,.85),inset 0 0 22px rgba(110,2,2,.6);
+  animation:labSurge 5s ease-in-out infinite;
+}
+@keyframes labSurge{
+  0%,100%{box-shadow:0 0 0 2px rgba(255,31,31,.55),0 0 30px rgba(255,31,31,.25),inset 0 0 60px rgba(0,0,0,.85)}
+  50%{box-shadow:0 0 0 2px rgba(157,255,59,.5),0 0 38px rgba(157,255,59,.3),inset 0 0 60px rgba(0,0,0,.85)}
+}
+body.zombie .cell{border-color:rgba(255,31,31,.22);background:linear-gradient(145deg,rgba(110,2,2,.16),rgba(0,0,0,.3))}
+body.zombie .cell.is-orb{border-color:rgba(157,255,59,.7);background:linear-gradient(145deg,rgba(157,255,59,.14),rgba(110,2,2,.2))}
+body.zombie #spin-btn{
+  background:radial-gradient(circle at 32% 28%,#ff6a4a,#9c1414 45%,#2e0404 90%);
+  box-shadow:0 0 26px rgba(255,31,31,.6),inset 0 -6px 14px rgba(0,0,0,.5);
+  border-color:rgba(157,255,59,.5);
+}
+body.zombie #win-message{font-family:'Creepster',cursive;letter-spacing:.2em;font-size:1.1rem}
+body.zombie #mg-title{font-family:'Creepster',cursive;letter-spacing:.16em;font-size:1.5rem}
+body.zombie #bigwin-tier{
+  font-family:'Nosifer',cursive;font-weight:400;
+  background:linear-gradient(180deg,#FF6A4A,#FF1F1F 50%,#6E0202);
+  -webkit-background-clip:text;background-clip:text;
+  filter:drop-shadow(0 0 26px rgba(255,31,31,.85));
+}
+body.zombie #bigwin-rays{background:repeating-conic-gradient(rgba(255,31,31,.12) 0deg 9deg,transparent 9deg 18deg)}
+body.zombie #mg-box{background:linear-gradient(165deg,#240808,#0b0202 60%,#1a0606);box-shadow:0 0 60px rgba(255,31,31,.35)}
+body.zombie #fs-banner{background:linear-gradient(90deg,rgba(157,255,59,.14),rgba(157,255,59,.3),rgba(157,255,59,.14));border-color:rgba(157,255,59,.55);color:#9DFF3B}
 
+/* ============================================================
+   💪 BROFORCE MODE — pixel-art jungle warfare, day raid
+   ============================================================ */
 body.bro{
-  --cyan:#4FB3FF; --magenta:#FF2E2E; --gold:#FFD24D; --gold2:#FFA02E;
-  --violet:#2E5BFF; --good:#7DFFB0; --danger:#FF3B3B;
-  --bg0:#04060f; --bg1:#0a1024;
-  --panel:rgba(16,20,48,.85); --panel-edge:rgba(255,46,46,.35);
-  --text:#EAF2FF; --dim:#92A4D0;
+  --cyan:#FFE34D; --magenta:#FF3B2E; --gold:#FFD24D; --gold2:#FF8C1A;
+  --violet:#2E86C4; --good:#7DFF6B; --danger:#FF3B2E;
+  --bg0:#4FA0E0; --bg1:#7CC7FF;
+  --panel:rgba(30,20,8,.92); --panel-edge:rgba(122,74,26,.9);
+  --text:#FFF3D6; --dim:#C9A878;
 }
-body.bro #machine{background:linear-gradient(160deg,#1a2a6e,#070b22 55%,#5e1212)}
-body.bro #machine{box-shadow:0 0 0 2px rgba(255,46,46,.5),0 0 35px rgba(79,179,255,.25),inset 0 0 40px rgba(0,0,0,.65)}
-body.bro .cell{border-color:rgba(79,179,255,.22);background:linear-gradient(145deg,rgba(255,46,46,.06),rgba(79,179,255,.05))}
-body.bro #spin-btn{background:radial-gradient(circle at 32% 28%,#ff8a6b,#d62828 45%,#5e0b0b 90%);box-shadow:0 0 26px rgba(255,46,46,.6),inset 0 -6px 14px rgba(0,0,0,.4)}
-body.bro #logo{filter:drop-shadow(0 0 14px rgba(255,46,46,.55))}
-body.bro #mg-box{background:linear-gradient(165deg,#1a2a6e,#070b22 60%,#3e1010)}
+body.bro #aurora{background:linear-gradient(180deg,#8AD2FF 0%,#4FA0E0 45%,#2E6FA8 100%)}
+body.bro #aurora::before{
+  background:radial-gradient(circle,#fff,transparent 60%);opacity:.5;filter:blur(40px);
+  width:46vmax;height:18vmax;border-radius:50%;top:6vmax;left:-8vmax;
+  animation:cloudDrift 60s linear infinite;
+}
+body.bro #aurora::after{
+  background:radial-gradient(circle,#fff,transparent 60%);opacity:.38;filter:blur(34px);
+  width:34vmax;height:13vmax;border-radius:50%;top:20vmax;right:-30vmax;
+  animation:cloudDrift 85s linear infinite reverse;
+}
+@keyframes cloudDrift{from{transform:translateX(-25vmax)}to{transform:translateX(120vmax)}}
+body.bro #stars{display:none}
+body.bro #machine,body.bro .cell,body.bro .hud-card,body.bro .jp-pill,body.bro #forge-bar,
+body.bro #controls,body.bro .icon-btn,body.bro .bet-adj,body.bro .panel,body.bro .tab-btn,
+body.bro #mg-box,body.bro .mg-btn,body.bro .boon-card,body.bro #toast,body.bro .mode-btn,
+body.bro #ante-btn,body.bro .mine-tile,body.bro .hw-cell{border-radius:0}
+body.bro #logo{
+  font-family:'Press Start 2P',monospace;font-weight:400;font-size:clamp(1.05rem,4.6vw,1.6rem);
+  letter-spacing:.04em;
+  background:linear-gradient(180deg,#FFFFFF 12%,#FFD24D 35%,#FF3B2E 60%,#2E5BFF 95%);
+  -webkit-background-clip:text;background-clip:text;
+  filter:drop-shadow(2px 2px 0 rgba(0,0,0,.85)) drop-shadow(0 0 14px rgba(255,140,26,.5));
+  animation:none;
+}
+body.bro #subtitle{font-family:'Press Start 2P',monospace;font-size:.5rem;letter-spacing:.3em;color:#0d3a5e;text-shadow:1px 1px 0 rgba(255,255,255,.35)}
+body.bro #machine{
+  background:linear-gradient(180deg,#2a3d18 0%,#16240b 60%,#1f1408 100%);
+  border:none;
+  box-shadow:0 0 0 4px #0e1a08,0 0 0 8px #6e4a22,0 0 0 9px #2a1808,0 10px 0 9px rgba(0,0,0,.35);
+}
+body.bro .cell{
+  border:2px solid #5a3a1a;background:linear-gradient(180deg,#3a2a14 0%,#241808 100%);
+  box-shadow:inset 0 2px 0 rgba(255,255,255,.07);
+}
+body.bro .cell.is-orb{border-color:#FFE34D;background:linear-gradient(180deg,rgba(255,140,26,.25),#241808)}
+body.bro #spin-btn{
+  border-radius:14px;border:4px solid #FFE9B0;
+  font-family:'Press Start 2P',monospace;font-size:.78rem;font-weight:400;
+  background:linear-gradient(180deg,#ff5a3c 0%,#c41f0e 55%,#7a0c04 100%);
+  box-shadow:0 6px 0 #4a0802,0 0 24px rgba(255,59,46,.5);
+  animation:none;
+}
+body.bro #spin-btn .sub{font-family:'Rajdhani',sans-serif;font-size:.52rem}
+body.bro #spin-btn.fs{background:linear-gradient(180deg,#8aff6b 0%,#2a9c1e 55%,#0c4a06 100%);color:#06300a;box-shadow:0 6px 0 #06300a,0 0 24px rgba(125,255,107,.6)}
+body.bro #win-display{background:rgba(20,14,6,.72);padding:4px;box-shadow:0 0 0 3px #6e4a22}
+body.bro #win-amount{font-family:'Press Start 2P',monospace;font-size:clamp(.9rem,4.4vw,1.25rem)}
+body.bro #mg-title{font-family:'Press Start 2P',monospace;font-size:.95rem}
+body.bro #bigwin-tier{
+  font-family:'Press Start 2P',monospace;font-weight:400;font-size:clamp(1.5rem,8vw,2.8rem);
+  background:linear-gradient(180deg,#FFFFFF 15%,#FFD24D 45%,#FF3B2E 85%);
+  -webkit-background-clip:text;background-clip:text;
+  filter:drop-shadow(3px 3px 0 rgba(0,0,0,.9)) drop-shadow(0 0 26px rgba(255,140,26,.8));
+}
+body.bro #bigwin-amount{font-family:'Press Start 2P',monospace;font-size:clamp(1.2rem,7vw,2.2rem)}
+body.bro #bigwin-rays{background:repeating-conic-gradient(rgba(255,140,26,.14) 0deg 9deg,transparent 9deg 18deg)}
+body.bro #mg-box{background:linear-gradient(180deg,#2a3d18,#16240b 60%,#1f1408);box-shadow:0 0 0 4px #0e1a08,0 0 0 8px #6e4a22}
+body.bro #version-footer{color:#0d3a5e}
 </style>
 </head>
 <body>
@@ -706,8 +813,9 @@ body.bro #mg-box{background:linear-gradient(165deg,#1a2a6e,#070b22 60%,#3e1010)}
   </div>
 
   <details id="version-footer">
-    <summary>v1.2 · PRISMFALL — Gem Cascade Casino</summary>
+    <summary>v1.3 · PRISMFALL — Gem Cascade Casino</summary>
     <div id="changelog">
+      <b>v1.3</b> — TOTAL takeover modes: 💪 BROFALL is now full pixel-art jungle warfare (day-sky backdrop with drifting clouds, chunky square pixel UI, Press Start 2P type, BROTALITY win tiers) and 🧟 GRIMFALL melts into a blood-soaked crypt-lab (dripping Nosifer logo, flickering neon, surging Frankenstein machine, MONSTER WIN tiers). New IT'S ALIVE mechanic: in either mode a dead spin can be struck by lightning / an airstrike and reanimated into a forced cluster. Skin-tinted particles + thunder SFX. 27 achievements.<br>
       <b>v1.2</b> — Excitement overhaul: floating win numbers over every cluster, chain heat-up effects (tumble badge catches fire), charged-gem value fly-ups, win streak celebrations, jackpot shimmer sweeps, idle gem sparkles, pulsing spin button with cascade spinner ring, radial big-win rays, richer synth sounds, snappier tumble timing. Desktop machine now scales to viewport height — no more scroll/overlap on the spin bar. NEW unlockable takeover modes: 🧟 ZOMBIE (survive 66 spins) and 💪 BROFORCE (reach level 4) — full reskins with their own symbols, palettes and attitude.<br>
       <b>v1.1</b> — Mobile &amp; desktop QA pass: sticky spin bar that clears Safari's toolbar, widescreen two-column desktop layout, bigger touch targets, iOS web-app meta. Free spins and Hold &amp; Win respins are now player-triggered (only AUTO automates). New 💳 Gem Bank free token reloads via the Gems card.<br>
       <b>v1.0</b> — Initial release: 6×5 scatter-pays cascade engine, charged-gem multipliers up to ×500, free spins with accumulating multiplier, Lightning Hold &amp; Win with 4 progressive jackpots, the Gem Forge boon system, Gem Mine / Crystal Wheel / Gem Cutter mini-games, bonus buy, ante bet, XP levels, 24 achievements, daily wheel, synthesized soundtrack.<br>
@@ -731,6 +839,7 @@ body.bro #mg-box{background:linear-gradient(165deg,#1a2a6e,#070b22 60%,#3e1010)}
 </div>
 
 <div id="fx-layer"></div>
+<div id="flash"></div>
 <div id="toast"></div>
 <canvas id="particles"></canvas>
 
@@ -806,6 +915,7 @@ const ACHIEVEMENTS = [
   { id:'daily5',       e:'📅', n:'Regular',         d:'Claim 5 daily wheels' },
   { id:'zombie',       e:'🧟', n:'Graveyard Shift', d:'Unlock Zombie Mode (66 spins)' },
   { id:'bro',          e:'💪', n:'HELL YEAH',       d:'Unlock Broforce Mode (level 4)' },
+  { id:'reanimated',   e:'⚡', n:'Reanimator',      d:'Witness a dead spin come back to life' },
 ];
 
 /* ---------- Unlockable full-reskin modes ---------- */
@@ -815,9 +925,12 @@ const SKINS = {
     loss: ['So close…', 'The gems are charging…', 'Tumble awaits…', 'Next one shatters!', 'The forge hungers…', 'Feel that? Something big is coming.'],
   },
   zombie: {
-    logo: 'GRIMFALL', subtitle: 'Zombie Gem Crypt', cls: 'zombie',
+    logo: 'GRIMFALL', subtitle: 'It’s Alive — Zombie Gem Lab', cls: 'zombie',
     unlockText: '🧟 ZOMBIE MODE UNLOCKED — survive the crypt! Toggle it under your bet.',
-    loss: ['The dead are restless…', 'Something stirs below…', 'The crypt keeps its gems…', 'Braaains… and tumbles…', 'The moon is rising…'],
+    loss: ['The dead are restless…', 'Something stirs below…', 'The crypt keeps its gems…', 'Braaains… and tumbles…', 'The storm is gathering…', 'The lab hums with voltage…'],
+    tiers: ['BLOODY WIN', 'MONSTER WIN', 'UNDEAD EPIC', 'IT’S ALIVE!'],
+    colors: ['#FF1F1F', '#9DFF3B', '#FF8C1A', '#fff', '#7a0808'],
+    revive: { chance: .10, fx: 'zmb', text: '⚡ IT’S ALIVE!', toast: '🧟⚡ The lab surges — your dead spin is REANIMATED!' },
     syms: {
       crown:['💀','Skull Crown'], diamond:['🧠','Brain Gem'], orbgem:['🧪','Toxic Vial'],
       eye:['👁️','Evil Eye'], amber:['🕷️','Widow Spider'], topaz:['🦇','Night Bat'],
@@ -826,9 +939,12 @@ const SKINS = {
     },
   },
   bro: {
-    logo: 'BROFALL', subtitle: 'Freedom Cascade Force', cls: 'bro',
+    logo: 'BROFALL', subtitle: 'Jungle Freedom Raid', cls: 'bro',
     unlockText: '💪 BROFORCE MODE UNLOCKED — FREEDOM DELIVERED! Toggle it under your bet.',
-    loss: ['Not bro enough… yet.', 'FREEDOM is reloading…', 'The eagle circles…', 'Walk it off, bro.', 'High-five incoming…'],
+    loss: ['Not bro enough… yet.', 'FREEDOM is reloading…', 'The eagle circles…', 'Walk it off, bro.', 'High-five incoming…', 'Chopper inbound…'],
+    tiers: ['BIG BRO WIN', 'MEGA BRO WIN', 'EPIC FREEDOM', 'BROTALITY'],
+    colors: ['#FF3B2E', '#FFD24D', '#FF8C1A', '#fff', '#2E5BFF'],
+    revive: { chance: .08, fx: 'brf', text: '💥 BRO-STRIKE!', toast: '💪🛩️ AIRSTRIKE INBOUND — freedom rerolls your spin!' },
     syms: {
       crown:['🦅','Freedom Eagle'], diamond:['🗽','Lady Liberty'], orbgem:['💣','Bro Bomb'],
       eye:['🎖️','War Medal'], amber:['🧨','Dynamite'], topaz:['🚁','Attack Chopper'],
@@ -839,6 +955,7 @@ const SKINS = {
 };
 function skinE(sym)    { const s = SKINS[state.skin]; return (s.syms && s.syms[sym.id]) ? s.syms[sym.id][0] : sym.e; }
 function skinName(sym) { const s = SKINS[state.skin]; return (s.syms && s.syms[sym.id]) ? s.syms[sym.id][1] : sym.name; }
+function skinColors()  { return SKINS[state.skin].colors || WIN_COLORS; }
 
 const BOONS = [
   { id:'vault',  e:'💰', n:'Coin Vault',     d:'Instantly crack a vault of 10–25× bet' },
@@ -950,6 +1067,7 @@ const SFX = {
   lose()    { tone(294, .25, 'sawtooth', .06, 0, -90); },
   tick()    { tone(1800, .03, 'square', .05); },
   forge()   { tone(140, .3, 'sawtooth', .12, 0, 60); noiseBurst(.25, .12, .05, 600); tone(880, .4, 'sine', .1, .2, 440); },
+  thunder() { noiseBurst(.8, .22, 0, 110); tone(55, .9, 'sawtooth', .16, 0, -25); tone(1400, .35, 'square', .07, .08, -1100); noiseBurst(.4, .1, .25, 2500); },
 };
 
 /* ---------- Toast & particles ---------- */
@@ -1113,6 +1231,21 @@ function tumbleDown() {
   return mask;
 }
 
+/* Revive helper: graft the most common gem up to a paying 8-cluster */
+function forceCluster() {
+  const counts = {};
+  grid.forEach(c => { if (c && c.sym.pays) counts[c.sym.id] = (counts[c.sym.id] || 0) + 1; });
+  let best = SYMBOLS[SYMBOLS.length - 1], bestN = -1;
+  for (const s of SYMBOLS) if ((counts[s.id] || 0) > bestN) { best = s; bestN = counts[s.id] || 0; }
+  const need = 8 - bestN;
+  const candidates = grid.map((c, i) =>
+    (c && c.sym.id !== best.id && c.sym.pays) ? i : -1).filter(i => i >= 0);
+  for (let k = 0; k < need && candidates.length; k++) {
+    const i = candidates.splice(Math.floor(Math.random() * candidates.length), 1)[0];
+    grid[i] = { sym: best };
+  }
+}
+
 /* ============================================================
    SPIN LOOP
    ============================================================ */
@@ -1171,6 +1304,7 @@ async function doSpin(opts = {}) {
 
   // ---- tumble loop ----
   let tumbleWin = 0, chain = 0;
+  const runTumbles = async () => {
   while (true) {
     const wins = evaluateClusters();
     if (!wins.length) break;
@@ -1205,7 +1339,7 @@ async function doSpin(opts = {}) {
       gridEl.children[i].classList.remove('win-glow');
       gridEl.children[i].classList.add('shatter');
       const { x, y } = cellCenter(i);
-      burst(x, y, WIN_COLORS, 8, 4);
+      burst(x, y, skinColors(), 8, 4);
     });
     state.forge = Math.min(FORGE_CAP, state.forge + cellsToShatter.size);
     updateForge();
@@ -1215,6 +1349,28 @@ async function doSpin(opts = {}) {
     renderGrid(false, mask);
     SFX.drop();
     await sleep(speed(370));
+  }
+  };
+  await runTumbles();
+
+  // ---- skin revive: lightning / airstrike resurrects a dead spin ----
+  const revive = SKINS[state.skin].revive;
+  if (!isFree && tumbleWin === 0 && revive && Math.random() < revive.chance) {
+    unlock('reanimated');
+    const f = $('flash');
+    f.className = '';
+    void f.offsetWidth;
+    f.classList.add('go', revive.fx);
+    SFX.thunder();
+    $('shake-root').classList.add('shake');
+    setTimeout(() => $('shake-root').classList.remove('shake'), 500);
+    floatText(innerWidth / 2, innerHeight * .35, revive.text, 'hot big');
+    toast(revive.toast);
+    await sleep(speed(750));
+    forceCluster();
+    renderGrid(false);
+    await sleep(speed(420));
+    await runTumbles();
   }
 
   // ---- charged gem multipliers ----
@@ -1280,7 +1436,7 @@ async function doSpin(opts = {}) {
         chain > 1 ? `⛓️ ${chain}-CHAIN TUMBLE WIN` :
         mult >= 5 ? '💎 SPARKLING WIN' : '✨ WIN';
       $('win-amount').textContent = '+' + fmt(totalWin);
-      burst(innerWidth / 2, innerHeight / 2, WIN_COLORS, 24, 6);
+      burst(innerWidth / 2, innerHeight / 2, skinColors(), 24, 6);
     }
   } else {
     addHistory(isFree ? 'FREE' : 'SPIN', 0, chain);
@@ -1361,10 +1517,8 @@ function showInterstitial(title, html) {
    BIG WIN PRESENTATION
    ============================================================ */
 function winTier(mult) {
-  if (mult >= 150) return 'LEGENDARY WIN';
-  if (mult >= 80) return 'EPIC WIN';
-  if (mult >= 40) return 'MEGA WIN';
-  return 'BIG WIN';
+  const t = SKINS[state.skin].tiers || ['BIG WIN', 'MEGA WIN', 'EPIC WIN', 'LEGENDARY WIN'];
+  return mult >= 150 ? t[3] : mult >= 80 ? t[2] : mult >= 40 ? t[1] : t[0];
 }
 function bigWin(amount, mult) {
   return new Promise(res => {
@@ -1376,7 +1530,7 @@ function bigWin(amount, mult) {
     SFX.bigwin();
     coinShower(mult >= 80 ? 140 : 80);
     const burster = setInterval(() => {
-      burst(rand(innerWidth * .2, innerWidth * .8), rand(innerHeight * .2, innerHeight * .6), WIN_COLORS, 16, 7);
+      burst(rand(innerWidth * .2, innerWidth * .8), rand(innerHeight * .2, innerHeight * .6), skinColors(), 16, 7);
       if (mult >= 40) coinShower(12);
     }, 450);
     if (navigator.vibrate) navigator.vibrate([60, 40, 60, 40, 120]);
@@ -1598,7 +1752,7 @@ function openGemMine() {
         t.textContent = '💎';
         SFX.coin();
         const r = t.getBoundingClientRect();
-        burst(r.left + r.width / 2, r.top + r.height / 2, WIN_COLORS, 10, 4);
+        burst(r.left + r.width / 2, r.top + r.height / 2, skinColors(), 10, 4);
         $('mine-total').textContent = fmt(total);
         if (picks === 13) { unlock('mine_clean'); over = true; await sleep(700); finishMine(total, '⛏️ FULL CLEAR! Every gem mined:'); }
       }
@@ -1724,7 +1878,7 @@ function openGemCutter() {
     state.coins += amt; state.stats.won += amt; lastWin = amt;
     addHistory('CUT', amt, 0);
     $('cutter-gem').textContent = mult >= 5 ? '💎' : '🪨';
-    burst(innerWidth / 2, innerHeight / 2, WIN_COLORS, 26, 7);
+    burst(innerWidth / 2, innerHeight / 2, skinColors(), 26, 7);
     await sleep(800);
     $('mg-overlay').classList.remove('active');
     if (mult >= 10) SFX.bigwin(); else if (mult >= 2) SFX.win(); else SFX.lose();

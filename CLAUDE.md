@@ -27,7 +27,7 @@
 
 Both are inside the `<details id="version-footer">` near the bottom of `index.html`.
 
-## Current version: v1.2
+## Current version: v1.3
 
 ## Architecture
 - Single file: `index.html` — all CSS, JS, and HTML inline, no build step
@@ -57,8 +57,9 @@ Both are inside the `<details id="version-footer">` near the bottom of `index.ht
 - **Bonus Buy** (100×/200×/120× bet), **Ante Bet** (×1.25 cost, +50% scatter/nugget odds)
 - **Gem Bank**: free token reloads via the Gems HUD card (placeholder for future monetization)
 - **Engagement rule**: nothing auto-spins except the AUTO button — free spins and Hold & Win respins are player-triggered
-- **Meta**: XP levels with rewards, 26 achievements, daily wheel (20h cooldown), session stats, spin history
-- **Takeover modes**: `SKINS` registry — 🧟 Zombie (unlock: 66 spins) and 💪 Broforce (unlock: level 4) fully reskin palette (CSS vars on `body.zombie`/`body.bro`), logo, all 13 symbols (`skinE`/`skinName`), and flavor text while active
+- **Meta**: XP levels with rewards, 27 achievements, daily wheel (20h cooldown), session stats, spin history
+- **Takeover modes**: `SKINS` registry — 🧟 Zombie (unlock: 66 spins) and 💪 Broforce (unlock: level 4) fully reskin palette (CSS vars on `body.zombie`/`body.bro`), fonts (Nosifer/Creepster vs Press Start 2P), backgrounds (neon crypt vs day-sky jungle), logo, all 13 symbols (`skinE`/`skinName`), win tiers, particle colors, and flavor text while active
+- **Revive mechanic**: in a takeover mode, a losing base-game spin has a `SKINS[skin].revive.chance` (8–10%) of being reanimated — lightning/airstrike flash (`#flash`), then `forceCluster()` grafts the most common gem to a paying 8-cluster and tumbles rerun
 - All audio is synthesized via WebAudio — no sound files. All art is emoji/CSS/SVG/Canvas — no image files.
 
 ## Testing
