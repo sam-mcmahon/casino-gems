@@ -27,7 +27,7 @@
 
 Both are inside the `<details id="version-footer">` near the bottom of `index.html`.
 
-## Current version: v1.7
+## Current version: v1.7.1
 
 ## Architecture
 - Single file: `index.html` — all CSS, JS, and HTML inline, no build step
@@ -44,7 +44,7 @@ Both are inside the `<details id="version-footer">` near the bottom of `index.ht
 - `CHARGE_VALUES` — charged-gem multiplier table (×2–×500, weighted)
 - `HW_VALUES` — Hold & Win coin values + MINI/MINOR/MAJOR jackpot coins
 - `JP_SEED` — jackpot reseed values
-- `FORGE_CAP = 150` — shattered gems needed to smelt a boon
+- `FORGE_CAP = 120` — shattered gems needed to smelt a boon
 
 ## Game mechanics
 - **Engine**: 8+ matching gems anywhere pays → winners shatter → tumble/cascade refills → repeat until no win
@@ -58,7 +58,7 @@ Both are inside the `<details id="version-footer">` near the bottom of `index.ht
 - **Gem Bank**: free token reloads via the Gems HUD card (placeholder for future monetization)
 - **Engagement rule**: nothing auto-spins except the AUTO button — free spins and Hold & Win respins are player-triggered
 - **Meta**: XP levels with rewards, 27 achievements, daily wheel (20h cooldown), session stats, spin history
-- **Takeover events**: `SKINS` registry with `event` config — 🧟 Zombie Outbreak (winning cluster of 10+ 🟢 emerald) and 💪 Broforce Raid (10+ 🔺 ruby) take over the game for 10 spins (`state.modeSpins`): full reskin (CSS vars on `body.zombie`/`body.bro`, Nosifer/Creepster vs Press Start 2P fonts, neon crypt vs day-sky jungle, all 13 symbols via `skinE`/`skinName`, win tiers, particle colors) plus different winning — all wins ×2, outbreak boosts reanimation to 25%, raid adds per-spin strafing runs. Not user-toggleable; ends with "realm restores" interstitial
+- **Takeover events**: `SKINS` registry with `event` config — 🧟 Zombie Outbreak (winning cluster of 10+ 🟢 emerald) and 💪 Broforce Raid (10+ 🔺 ruby) take over the game for 10 spins (`state.modeSpins`): full reskin (CSS vars on `body.zombie`/`body.bro`, Nosifer/Creepster vs Press Start 2P fonts, neon crypt vs day-sky jungle, all 13 symbols via `skinE`/`skinName`, win tiers, particle colors) plus different winning — all wins ×2, outbreak boosts reanimation to 25%, raid adds per-spin strafing runs. Not user-toggleable; ends with "realm restores" interstitial and an 18-spin `state.modeCooldown` so takeovers run ~1/6 of playtime
 - **Revive mechanic**: in a takeover mode, a losing base-game spin has a `SKINS[skin].revive.chance` (8–10%) of being reanimated — lightning/airstrike flash (`#flash`), then `forceCluster()` grafts the most common gem to a paying 8-cluster and tumbles rerun
 - All audio is synthesized via WebAudio — no sound files. All art is emoji/CSS/SVG/Canvas — no image files.
 
