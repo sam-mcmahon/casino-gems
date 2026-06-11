@@ -32,10 +32,12 @@ body{
   background:var(--bg0);
   color:var(--text);
   min-height:100vh;
+  min-height:100dvh;
   overflow-x:hidden;
   padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
   user-select:none;
   -webkit-user-select:none;
+  -webkit-text-size-adjust:100%;
 }
 /* Aurora backdrop */
 #aurora{position:fixed;inset:0;z-index:-2;background:var(--bg0);overflow:hidden}
@@ -509,9 +511,10 @@ body{
   background:linear-gradient(135deg,#241454,#120a2e);border:1px solid var(--cyan);
   border-radius:12px;padding:11px 15px;font-size:.85rem;font-weight:600;
   box-shadow:0 0 24px rgba(0,229,255,.35);
-  transform:translateX(130%);transition:transform .4s cubic-bezier(.2,1.2,.4,1);
+  transform:translateX(130%);opacity:0;
+  transition:transform .4s cubic-bezier(.2,1.2,.4,1),opacity .3s;
 }
-#toast.show{transform:translateX(0)}
+#toast.show{transform:translateX(0);opacity:1}
 #particles{position:fixed;inset:0;z-index:70;pointer-events:none}
 #shake-root.shake{animation:screenShake .45s ease}
 @keyframes screenShake{
@@ -535,21 +538,28 @@ body{
 /* ===== Desktop / widescreen layout ===== */
 @media (min-width:900px){
   #app{
-    max-width:1000px;display:grid;column-gap:22px;row-gap:8px;align-items:start;
-    /* machine column scales with viewport height so the full game
-       (header→controls) fits on screen with zero scrolling; the sticky
-       controls dock remains as a safety net on short/zoomed windows */
-    grid-template-columns:minmax(0,clamp(340px,calc(112vh - 540px),560px)) minmax(300px,1fr);
+    max-width:1180px;display:grid;column-gap:26px;row-gap:8px;align-items:start;
+    /* THE GAME IS THE HERO: the machine column takes the stage, scaled
+       by viewport height so header→controls fits with zero scrolling;
+       the info panel is a fixed-width sidekick. The sticky dock stays
+       as a safety net on short/zoomed windows. */
+    grid-template-columns:minmax(0,clamp(400px,calc(120vh - 600px),760px)) minmax(300px,360px);
+    justify-content:center;
     grid-template-areas:
       "header header" "hud hud" "jp jp"
       "forge side" "machine side" "win side" "controls side"
       "footer footer";
   }
   #header{padding:0}
-  #logo{font-size:1.75rem}
-  #subtitle{font-size:.68rem}
-  #win-display{min-height:38px}
-  #controls{padding:7px 12px}
+  #logo{font-size:2rem}
+  #subtitle{font-size:.7rem;display:block}
+  #win-display{min-height:34px}
+  #controls{padding:7px 14px}
+  #spin-btn{width:108px;height:108px;font-size:1.05rem}
+  .cell{font-size:clamp(1.4rem,calc((100vh - 430px)/5*.52),3rem)}
+  .orb-tag{font-size:clamp(.66rem,1.1vh,.95rem)}
+  #machine{padding:14px}
+  #side-panel .panel{font-size:.8rem}
   #header{grid-area:header}
   #top-row{grid-area:hud}
   #jackpot-strip{grid-area:jp}
@@ -563,9 +573,20 @@ body{
   .panel{max-height:600px;overflow-y:auto}
 }
 
-/* ===== Mobile: touch targets ===== */
-@media (max-width:640px){
+/* ===== Mobile: touch targets + viewport-locked grid ===== */
+@media (max-width:899px){
   .bet-adj{width:40px;height:40px}
+  /* Don't trust aspect-ratio on iOS Safari (page zoom / dynamic type can
+     blow the grid up past the viewport). Size the grid explicitly from
+     BOTH the available width (6:5) and the dynamic viewport height so
+     header→spin-dock always fits with no overlap. */
+  #grid{
+    aspect-ratio:auto;
+    height:clamp(228px,calc(100vh - 472px),calc((100vw - 34px)*0.8333));
+    height:clamp(228px,calc(100dvh - 472px),calc((100vw - 34px)*0.8333));
+  }
+  #subtitle{display:none}
+  #controls{bottom:calc(env(safe-area-inset-bottom,0px) + 12px)}
 }
 @media (max-width:480px){
   #app{padding:6px 8px calc(14px + env(safe-area-inset-bottom));gap:6px}
@@ -577,7 +598,7 @@ body{
   #spin-btn{width:92px;height:92px;font-size:.9rem}
   .icon-btn{width:44px;height:44px}
   #toast{top:auto;bottom:calc(96px + env(safe-area-inset-bottom));right:50%;transform:translate(50%,250%)}
-  #toast.show{transform:translate(50%,0)}
+  #toast.show{transform:translate(50%,0);opacity:1}
 }
 @media (max-width:480px) and (max-height:760px){
   #subtitle{display:none}
@@ -811,8 +832,9 @@ body.bro #version-footer{color:#0d3a5e}
   </div>
 
   <details id="version-footer">
-    <summary>v1.4 · PRISMFALL — Gem Cascade Casino</summary>
+    <summary>v1.5 · PRISMFALL — Gem Cascade Casino</summary>
     <div id="changelog">
+      <b>v1.5</b> — Mobile Safari truly dialed in: the grid is now sized explicitly from viewport width AND dynamic viewport height (no more aspect-ratio blowups under page zoom — the spin dock can never cover the board). Desktop now features the game: the machine is the hero at up to 760px with gems that scale to fill it, info panels demoted to a fixed-width sidekick.<br>
       <b>v1.4</b> — Takeover modes are now SPECIAL EVENTS, not toggles: land a winning cluster of 10+ 🟢 Emerald Chips to trigger a ZOMBIE OUTBREAK, or 10+ 🔺 Ruby Shards to trigger a BROFORCE RAID. Each takes over the whole game for 10 spins with different winning — all wins ×2, plus 25% reanimation odds (outbreak) or per-spin strafing runs that convert gems toward premium clusters (raid). Countdown banner, lightning entry, "realm restores" exit.<br>
       <b>v1.3</b> — TOTAL takeover modes: 💪 BROFALL is now full pixel-art jungle warfare (day-sky backdrop with drifting clouds, chunky square pixel UI, Press Start 2P type, BROTALITY win tiers) and 🧟 GRIMFALL melts into a blood-soaked crypt-lab (dripping Nosifer logo, flickering neon, surging Frankenstein machine, MONSTER WIN tiers). New IT'S ALIVE mechanic: in either mode a dead spin can be struck by lightning / an airstrike and reanimated into a forced cluster. Skin-tinted particles + thunder SFX. 27 achievements.<br>
       <b>v1.2</b> — Excitement overhaul: floating win numbers over every cluster, chain heat-up effects (tumble badge catches fire), charged-gem value fly-ups, win streak celebrations, jackpot shimmer sweeps, idle gem sparkles, pulsing spin button with cascade spinner ring, radial big-win rays, richer synth sounds, snappier tumble timing. Desktop machine now scales to viewport height — no more scroll/overlap on the spin bar. NEW unlockable takeover modes: 🧟 ZOMBIE (survive 66 spins) and 💪 BROFORCE (reach level 4) — full reskins with their own symbols, palettes and attitude.<br>
