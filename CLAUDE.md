@@ -27,7 +27,7 @@
 
 Both are inside the `<details id="version-footer">` near the bottom of `index.html`.
 
-## Current version: v1.1
+## Current version: v1.2
 
 ## Architecture
 - Single file: `index.html` — all CSS, JS, and HTML inline, no build step
@@ -57,7 +57,8 @@ Both are inside the `<details id="version-footer">` near the bottom of `index.ht
 - **Bonus Buy** (100×/200×/120× bet), **Ante Bet** (×1.25 cost, +50% scatter/nugget odds)
 - **Gem Bank**: free token reloads via the Gems HUD card (placeholder for future monetization)
 - **Engagement rule**: nothing auto-spins except the AUTO button — free spins and Hold & Win respins are player-triggered
-- **Meta**: XP levels with rewards, 24 achievements, daily wheel (20h cooldown), session stats, spin history
+- **Meta**: XP levels with rewards, 26 achievements, daily wheel (20h cooldown), session stats, spin history
+- **Takeover modes**: `SKINS` registry — 🧟 Zombie (unlock: 66 spins) and 💪 Broforce (unlock: level 4) fully reskin palette (CSS vars on `body.zombie`/`body.bro`), logo, all 13 symbols (`skinE`/`skinName`), and flavor text while active
 - All audio is synthesized via WebAudio — no sound files. All art is emoji/CSS/SVG/Canvas — no image files.
 
 ## Testing

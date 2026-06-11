@@ -98,6 +98,15 @@ body{
   background:var(--panel);border:1px solid var(--panel-edge);
   position:relative;overflow:hidden;
 }
+.jp-pill::after{
+  content:'';position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(110deg,transparent 42%,rgba(255,255,255,.16) 50%,transparent 58%);
+  background-size:260% 100%;animation:jpSweep 5.5s linear infinite;
+}
+.jp-major::after{animation-delay:1.2s}
+.jp-minor::after{animation-delay:2.4s}
+.jp-mini::after{animation-delay:3.6s}
+@keyframes jpSweep{0%{background-position:130% 0}55%,100%{background-position:-130% 0}}
 .jp-pill .jp-name{font-size:.58rem;font-weight:700;letter-spacing:.18em}
 .jp-pill .jp-val{font-family:'Orbitron',sans-serif;font-size:clamp(.6rem,2.6vw,.78rem);font-weight:700;color:var(--text)}
 .jp-grand{border-color:rgba(255,201,60,.65);box-shadow:0 0 14px rgba(255,201,60,.18);animation:grandPulse 3s ease-in-out infinite}
@@ -207,7 +216,40 @@ body{
   box-shadow:0 0 14px rgba(255,46,196,.6);
 }
 #tumble-badge.on{display:block;animation:tumblePop .3s cubic-bezier(.2,1.6,.4,1)}
+#tumble-badge.hot{
+  background:linear-gradient(135deg,var(--gold2),var(--danger));
+  box-shadow:0 0 18px rgba(255,159,28,.8);transform:scale(1.12);
+}
+#tumble-badge.inferno{
+  background:linear-gradient(135deg,#FF3300,var(--magenta));
+  box-shadow:0 0 26px rgba(255,51,0,.95);transform:scale(1.25);
+  animation:infernoShake .25s ease-in-out infinite alternate;
+}
+@keyframes infernoShake{from{transform:scale(1.22) rotate(-2deg)}to{transform:scale(1.28) rotate(2deg)}}
 @keyframes tumblePop{from{transform:scale(.3)}to{transform:scale(1)}}
+
+.cell.sparkle .sym{animation:cellSparkle .85s ease}
+@keyframes cellSparkle{
+  0%,100%{filter:drop-shadow(0 2px 4px rgba(0,0,0,.6))}
+  50%{filter:drop-shadow(0 0 14px #fff) brightness(1.9);transform:scale(1.14) rotate(6deg)}
+}
+
+/* floating win numbers */
+#fx-layer{position:fixed;inset:0;pointer-events:none;z-index:62;overflow:hidden}
+.float-text{
+  position:absolute;transform:translate(-50%,0);
+  font-family:'Orbitron',sans-serif;font-weight:900;font-size:1.05rem;color:var(--gold);
+  text-shadow:0 0 14px rgba(255,201,60,.95),0 2px 4px #000;white-space:nowrap;
+  animation:floatUp 1.15s cubic-bezier(.2,.7,.4,1) forwards;
+}
+.float-text.orb{color:var(--cyan);text-shadow:0 0 14px rgba(0,229,255,.95),0 2px 4px #000}
+.float-text.hot{color:#fff;text-shadow:0 0 16px rgba(255,46,196,1),0 2px 4px #000}
+.float-text.big{font-size:1.7rem}
+@keyframes floatUp{
+  0%{opacity:0;transform:translate(-50%,6px) scale(.5)}
+  18%{opacity:1;transform:translate(-50%,-12px) scale(1.18)}
+  100%{opacity:0;transform:translate(-50%,-86px) scale(1)}
+}
 
 /* ===== Win display ===== */
 #win-display{min-height:54px;text-align:center;display:flex;flex-direction:column;justify-content:center}
@@ -244,6 +286,14 @@ body{
   background:var(--panel);border:1px solid var(--panel-edge);color:var(--dim);cursor:pointer;
 }
 #ante-btn.on{color:#1a0e00;background:linear-gradient(135deg,var(--gold),var(--gold2));border-color:var(--gold);box-shadow:0 0 12px rgba(255,201,60,.5)}
+#mode-row{display:flex;gap:4px}
+.mode-btn{
+  font-size:.58rem;font-weight:700;letter-spacing:.08em;padding:4px 7px;border-radius:8px;
+  background:var(--panel);border:1px solid var(--panel-edge);color:var(--dim);cursor:pointer;
+  font-family:'Rajdhani',sans-serif;
+}
+.mode-btn.on{color:#fff;border-color:var(--good);box-shadow:0 0 12px rgba(52,245,164,.5);background:linear-gradient(135deg,rgba(52,245,164,.3),rgba(0,0,0,.4))}
+.mode-btn.hidden{display:none}
 
 #spin-btn{
   width:108px;height:108px;border-radius:50%;border:3px solid rgba(255,255,255,.5);cursor:pointer;
@@ -252,8 +302,21 @@ body{
   box-shadow:0 0 26px rgba(139,92,246,.6),inset 0 -6px 14px rgba(0,0,0,.4);
   text-shadow:0 2px 6px rgba(0,0,0,.6);
   transition:transform .12s,filter .2s;
-  flex-shrink:0;
+  flex-shrink:0;position:relative;
+  animation:spinIdle 2.4s ease-in-out infinite;
 }
+@keyframes spinIdle{
+  0%,100%{box-shadow:0 0 18px rgba(139,92,246,.5),inset 0 -6px 14px rgba(0,0,0,.4)}
+  50%{box-shadow:0 0 38px rgba(139,92,246,.95),0 0 60px rgba(255,46,196,.25),inset 0 -6px 14px rgba(0,0,0,.4)}
+}
+#spin-btn::after{
+  content:'';position:absolute;inset:-8px;border-radius:50%;
+  border:3px solid transparent;border-top-color:var(--cyan);border-right-color:var(--magenta);
+  opacity:0;transition:opacity .2s;
+}
+#spin-btn.spinning{animation:none}
+#spin-btn.spinning::after{opacity:1;animation:spinnerRot .65s linear infinite}
+@keyframes spinnerRot{to{transform:rotate(360deg)}}
 #spin-btn:active{transform:scale(.94)}
 #spin-btn:disabled{filter:grayscale(.7) brightness(.6);cursor:default}
 #spin-btn.fs{
@@ -416,6 +479,14 @@ body{
   background:radial-gradient(circle,rgba(20,8,50,.88),rgba(4,2,12,.96));backdrop-filter:blur(4px);
 }
 #bigwin-overlay.active{display:flex}
+#bigwin-rays{
+  position:absolute;left:50%;top:50%;width:160vmax;height:160vmax;
+  transform:translate(-50%,-50%);border-radius:50%;pointer-events:none;
+  background:repeating-conic-gradient(rgba(255,201,60,.1) 0deg 9deg,transparent 9deg 18deg);
+  animation:raysRot 16s linear infinite;
+}
+@keyframes raysRot{to{transform:translate(-50%,-50%) rotate(360deg)}}
+#bigwin-tier,#bigwin-amount,#bigwin-tap{position:relative;z-index:2}
 #bigwin-tier{
   font-family:'Orbitron',sans-serif;font-weight:900;font-size:clamp(2.2rem,12vw,4.2rem);letter-spacing:.08em;
   background:linear-gradient(180deg,#fff,var(--gold) 55%,var(--gold2));
@@ -461,10 +532,13 @@ body{
 }
 
 /* ===== Desktop / widescreen layout ===== */
-@media (min-width:1024px){
+@media (min-width:900px){
   #app{
     max-width:1000px;display:grid;column-gap:22px;row-gap:8px;align-items:start;
-    grid-template-columns:minmax(0,540px) minmax(320px,1fr);
+    /* machine column scales with viewport height so the full game
+       (header→controls) fits on screen with zero scrolling; the sticky
+       controls dock remains as a safety net on short/zoomed windows */
+    grid-template-columns:minmax(0,clamp(340px,calc(112vh - 540px),560px)) minmax(300px,1fr);
     grid-template-areas:
       "header header" "hud hud" "jp jp"
       "forge side" "machine side" "win side" "controls side"
@@ -473,7 +547,8 @@ body{
   #header{padding:0}
   #logo{font-size:1.75rem}
   #subtitle{font-size:.68rem}
-  #win-display{min-height:42px}
+  #win-display{min-height:38px}
+  #controls{padding:7px 12px}
   #header{grid-area:header}
   #top-row{grid-area:hud}
   #jackpot-strip{grid-area:jp}
@@ -509,6 +584,37 @@ body{
   .cell{font-size:clamp(1.05rem,5.4vw,1.6rem)}
   .jp-pill{padding:3px 2px}
 }
+
+/* ============================================================
+   UNLOCKABLE MODES — full-takeover reskins via CSS variables
+   ============================================================ */
+body.zombie{
+  --cyan:#8AFF4F; --magenta:#FF3B1F; --gold:#FFB000; --gold2:#E07000;
+  --violet:#4E9C2A; --good:#C8FF4F; --danger:#FF2222;
+  --bg0:#040a03; --bg1:#0a1607;
+  --panel:rgba(13,30,10,.85); --panel-edge:rgba(138,255,79,.32);
+  --text:#E2FFD8; --dim:#8FBE7E;
+}
+body.zombie #machine{background:linear-gradient(160deg,#15330d,#050f04 55%,#1a2a06)}
+body.zombie #machine{box-shadow:0 0 0 2px rgba(138,255,79,.45),0 0 35px rgba(138,255,79,.2),inset 0 0 40px rgba(0,0,0,.65)}
+body.zombie .cell{border-color:rgba(138,255,79,.2);background:linear-gradient(145deg,rgba(138,255,79,.06),rgba(0,0,0,.1))}
+body.zombie #spin-btn{background:radial-gradient(circle at 32% 28%,#b6ff5e,#4e9c2a 45%,#143309 90%);box-shadow:0 0 26px rgba(138,255,79,.55),inset 0 -6px 14px rgba(0,0,0,.4)}
+body.zombie #logo{filter:drop-shadow(0 0 14px rgba(138,255,79,.6))}
+body.zombie #mg-box{background:linear-gradient(165deg,#15330d,#050f04 60%,#102a06)}
+
+body.bro{
+  --cyan:#4FB3FF; --magenta:#FF2E2E; --gold:#FFD24D; --gold2:#FFA02E;
+  --violet:#2E5BFF; --good:#7DFFB0; --danger:#FF3B3B;
+  --bg0:#04060f; --bg1:#0a1024;
+  --panel:rgba(16,20,48,.85); --panel-edge:rgba(255,46,46,.35);
+  --text:#EAF2FF; --dim:#92A4D0;
+}
+body.bro #machine{background:linear-gradient(160deg,#1a2a6e,#070b22 55%,#5e1212)}
+body.bro #machine{box-shadow:0 0 0 2px rgba(255,46,46,.5),0 0 35px rgba(79,179,255,.25),inset 0 0 40px rgba(0,0,0,.65)}
+body.bro .cell{border-color:rgba(79,179,255,.22);background:linear-gradient(145deg,rgba(255,46,46,.06),rgba(79,179,255,.05))}
+body.bro #spin-btn{background:radial-gradient(circle at 32% 28%,#ff8a6b,#d62828 45%,#5e0b0b 90%);box-shadow:0 0 26px rgba(255,46,46,.6),inset 0 -6px 14px rgba(0,0,0,.4)}
+body.bro #logo{filter:drop-shadow(0 0 14px rgba(255,46,46,.55))}
+body.bro #mg-box{background:linear-gradient(165deg,#1a2a6e,#070b22 60%,#3e1010)}
 </style>
 </head>
 <body>
@@ -572,6 +678,10 @@ body{
         <button class="bet-adj" id="bet-up">+</button>
       </div>
       <button id="ante-btn">ANTE ×1.25</button>
+      <div id="mode-row">
+        <button id="zombie-btn" class="mode-btn hidden">🧟 ZOMBIE</button>
+        <button id="bro-btn" class="mode-btn hidden">💪 BRO</button>
+      </div>
     </div>
     <button id="spin-btn">SPIN<span class="sub">HOLD A LUCKY GEM</span></button>
     <div id="side-btns">
@@ -596,8 +706,9 @@ body{
   </div>
 
   <details id="version-footer">
-    <summary>v1.1 · PRISMFALL — Gem Cascade Casino</summary>
+    <summary>v1.2 · PRISMFALL — Gem Cascade Casino</summary>
     <div id="changelog">
+      <b>v1.2</b> — Excitement overhaul: floating win numbers over every cluster, chain heat-up effects (tumble badge catches fire), charged-gem value fly-ups, win streak celebrations, jackpot shimmer sweeps, idle gem sparkles, pulsing spin button with cascade spinner ring, radial big-win rays, richer synth sounds, snappier tumble timing. Desktop machine now scales to viewport height — no more scroll/overlap on the spin bar. NEW unlockable takeover modes: 🧟 ZOMBIE (survive 66 spins) and 💪 BROFORCE (reach level 4) — full reskins with their own symbols, palettes and attitude.<br>
       <b>v1.1</b> — Mobile &amp; desktop QA pass: sticky spin bar that clears Safari's toolbar, widescreen two-column desktop layout, bigger touch targets, iOS web-app meta. Free spins and Hold &amp; Win respins are now player-triggered (only AUTO automates). New 💳 Gem Bank free token reloads via the Gems card.<br>
       <b>v1.0</b> — Initial release: 6×5 scatter-pays cascade engine, charged-gem multipliers up to ×500, free spins with accumulating multiplier, Lightning Hold &amp; Win with 4 progressive jackpots, the Gem Forge boon system, Gem Mine / Crystal Wheel / Gem Cutter mini-games, bonus buy, ante bet, XP levels, 24 achievements, daily wheel, synthesized soundtrack.<br>
     </div>
@@ -613,11 +724,13 @@ body{
 </div></div>
 
 <div id="bigwin-overlay">
+  <div id="bigwin-rays"></div>
   <div id="bigwin-tier">BIG WIN</div>
   <div id="bigwin-amount">0</div>
   <div id="bigwin-tap">TAP TO COLLECT</div>
 </div>
 
+<div id="fx-layer"></div>
 <div id="toast"></div>
 <canvas id="particles"></canvas>
 
@@ -691,7 +804,41 @@ const ACHIEVEMENTS = [
   { id:'level10',      e:'🌟', n:'Constellation',   d:'Reach level 10' },
   { id:'spins1000',    e:'🔁', n:'Marathon',        d:'Play 1,000 spins' },
   { id:'daily5',       e:'📅', n:'Regular',         d:'Claim 5 daily wheels' },
+  { id:'zombie',       e:'🧟', n:'Graveyard Shift', d:'Unlock Zombie Mode (66 spins)' },
+  { id:'bro',          e:'💪', n:'HELL YEAH',       d:'Unlock Broforce Mode (level 4)' },
 ];
+
+/* ---------- Unlockable full-reskin modes ---------- */
+const SKINS = {
+  base: {
+    logo: 'PRISMFALL', subtitle: 'Gem Cascade Casino', cls: '',
+    loss: ['So close…', 'The gems are charging…', 'Tumble awaits…', 'Next one shatters!', 'The forge hungers…', 'Feel that? Something big is coming.'],
+  },
+  zombie: {
+    logo: 'GRIMFALL', subtitle: 'Zombie Gem Crypt', cls: 'zombie',
+    unlockText: '🧟 ZOMBIE MODE UNLOCKED — survive the crypt! Toggle it under your bet.',
+    loss: ['The dead are restless…', 'Something stirs below…', 'The crypt keeps its gems…', 'Braaains… and tumbles…', 'The moon is rising…'],
+    syms: {
+      crown:['💀','Skull Crown'], diamond:['🧠','Brain Gem'], orbgem:['🧪','Toxic Vial'],
+      eye:['👁️','Evil Eye'], amber:['🕷️','Widow Spider'], topaz:['🦇','Night Bat'],
+      aqua:['👻','Phantom'], ruby:['🩸','Blood Drop'], emerald:['🧟','Walker'],
+      garnet:['🪦','Tombstone'], scatter:['🌕','Blood Moon'], charge:['⚡','Cursed Charge'], coin:['🕯️','Grave Candle'],
+    },
+  },
+  bro: {
+    logo: 'BROFALL', subtitle: 'Freedom Cascade Force', cls: 'bro',
+    unlockText: '💪 BROFORCE MODE UNLOCKED — FREEDOM DELIVERED! Toggle it under your bet.',
+    loss: ['Not bro enough… yet.', 'FREEDOM is reloading…', 'The eagle circles…', 'Walk it off, bro.', 'High-five incoming…'],
+    syms: {
+      crown:['🦅','Freedom Eagle'], diamond:['🗽','Lady Liberty'], orbgem:['💣','Bro Bomb'],
+      eye:['🎖️','War Medal'], amber:['🧨','Dynamite'], topaz:['🚁','Attack Chopper'],
+      aqua:['🛡️','Bro Shield'], ruby:['🥩','Protein Steak'], emerald:['💪','Bicep Flex'],
+      garnet:['🕶️','Action Shades'], scatter:['🎆','Freedom Burst'], charge:['⚡','Adrenaline'], coin:['🏅','Bro Medal'],
+    },
+  },
+};
+function skinE(sym)    { const s = SKINS[state.skin]; return (s.syms && s.syms[sym.id]) ? s.syms[sym.id][0] : sym.e; }
+function skinName(sym) { const s = SKINS[state.skin]; return (s.syms && s.syms[sym.id]) ? s.syms[sym.id][1] : sym.name; }
 
 const BOONS = [
   { id:'vault',  e:'💰', n:'Coin Vault',     d:'Instantly crack a vault of 10–25× bet' },
@@ -711,6 +858,7 @@ const state = {
   jp: { ...JP_SEED },
   fs: 0, fsTotal: 0, fsMult: 0,
   achievements: {}, dailyClaims: 0, lastDaily: 0,
+  skin: 'base', skinUnlocks: { zombie: false, bro: false },
   stats: { spins: 0, wagered: 0, won: 0, biggestWin: 0, biggestChain: 0, bonuses: 0, jackpots: 0 },
   history: [],
   sound: true, turbo: false,
@@ -784,7 +932,8 @@ function noiseBurst(dur = .2, vol = .12, when = 0, hp = 1200) {
 const SFX = {
   click()   { tone(620, .06, 'square', .07); },
   spin()    { noiseBurst(.4, .07, 0, 500); tone(180, .35, 'sawtooth', .05, 0, 240); },
-  drop()    { tone(190, .07, 'triangle', .08); },
+  drop()    { tone(190, .07, 'triangle', .08); tone(70, .1, 'sine', .1); },
+  streak(n) { [523, 659, 784].slice(0, Math.min(3, n)).forEach((f, i) => tone(f * (1 + n / 20), .16, 'square', .09, i * .07)); },
   shatter(chain) {
     const base = 520 + chain * 90;
     noiseBurst(.18, .1, 0, 2400);
@@ -857,6 +1006,20 @@ function cellCenter(i) {
   return { x: r.left + r.width / 2, y: r.top + r.height / 2 };
 }
 const WIN_COLORS = ['#FFC93C', '#00E5FF', '#FF2EC4', '#8B5CF6', '#fff'];
+function floatText(x, y, txt, cls = '') {
+  const d = document.createElement('div');
+  d.className = 'float-text ' + cls;
+  d.style.left = x + 'px'; d.style.top = y + 'px';
+  d.textContent = txt;
+  $('fx-layer').appendChild(d);
+  setTimeout(() => d.remove(), 1250);
+}
+function clusterCenter(cells) {
+  let x = 0, y = 0;
+  for (const i of cells) { const c = cellCenter(i); x += c.x; y += c.y; }
+  return { x: x / cells.length, y: y / cells.length };
+}
+let winStreak = 0;
 /* ============================================================
    GRID ENGINE — fill, render, evaluate, tumble
    ============================================================ */
@@ -896,11 +1059,11 @@ function renderGrid(dropAll = false, dropMask = null) {
       if (dropAll || (dropMask && dropMask[i])) {
         div.classList.add('drop');
         const span = document.createElement('span');
-        span.className = 'sym'; span.textContent = c.sym.e;
+        span.className = 'sym'; span.textContent = skinE(c.sym);
         span.style.animationDelay = (dropAll ? col * 55 + Math.random() * 60 : Math.random() * 90) + 'ms';
         div.appendChild(span);
       } else {
-        div.innerHTML = `<span class="sym">${c.sym.e}</span>`;
+        div.innerHTML = `<span class="sym">${skinE(c.sym)}</span>`;
       }
       if (c.sym.id === 'charge') {
         div.classList.add('is-orb');
@@ -959,6 +1122,7 @@ async function doSpin(opts = {}) {
   const cost = isFree || opts.free ? 0 : betCost();
   if (!isFree && state.coins < cost) { autoSpin = false; updateUI(); openBank(true); return; }
   spinning = true;
+  $('spin-btn').classList.add('spinning');
   SFX.spin();
   $('win-message').textContent = isFree ? 'FREE SPIN' : 'Cascading…';
   $('win-amount').textContent = '';
@@ -994,7 +1158,7 @@ async function doSpin(opts = {}) {
   }
   renderGrid(true);
   for (let c = 0; c < COLS; c++) setTimeout(() => SFX.drop(), speed(55) * c);
-  await sleep(speed(520));
+  await sleep(speed(440));
 
   // scatter anticipation
   let scatters = countSym('scatter');
@@ -1011,8 +1175,11 @@ async function doSpin(opts = {}) {
     const wins = evaluateClusters();
     if (!wins.length) break;
     chain++;
-    $('tumble-badge').textContent = 'TUMBLE ×' + chain;
-    $('tumble-badge').classList.add('on');
+    const badge = $('tumble-badge');
+    badge.textContent = chain >= 6 ? '🔥 INFERNO ×' + chain : chain >= 3 ? '🔥 HOT ×' + chain : 'TUMBLE ×' + chain;
+    badge.classList.add('on');
+    badge.classList.toggle('hot', chain >= 3 && chain < 6);
+    badge.classList.toggle('inferno', chain >= 6);
     if (chain >= 3) unlock('first_tumble');
     if (chain >= 6) unlock('chain6');
     if (chain >= 10) unlock('chain10');
@@ -1023,13 +1190,16 @@ async function doSpin(opts = {}) {
       tumbleWin += w.pay;
       w.cells.forEach(i => cellsToShatter.add(i));
       if (w.sym.id === 'crown' && w.count >= 12) unlock('crown12');
+      const cc = clusterCenter(w.cells);
+      floatText(cc.x, cc.y, '+' + fmt(w.pay), w.pay >= bet() * 5 ? 'big' : '');
     }
+    if (chain >= 2) floatText(innerWidth / 2, cellCenter(2).y - 30, (chain >= 5 ? '🔥 ' : '') + 'CHAIN ×' + chain + '!', 'hot big');
     // glow then shatter
     const gridEl = $('grid');
     cellsToShatter.forEach(i => gridEl.children[i].classList.add('win-glow'));
-    $('win-message').textContent = wins.map(w => `${w.count}× ${w.sym.e}`).join('  ');
+    $('win-message').textContent = wins.map(w => `${w.count}× ${skinE(w.sym)}`).join('  ');
     $('win-amount').textContent = '+' + fmt(tumbleWin);
-    await sleep(speed(420));
+    await sleep(speed(380));
     SFX.shatter(chain);
     cellsToShatter.forEach(i => {
       gridEl.children[i].classList.remove('win-glow');
@@ -1039,12 +1209,12 @@ async function doSpin(opts = {}) {
     });
     state.forge = Math.min(FORGE_CAP, state.forge + cellsToShatter.size);
     updateForge();
-    await sleep(speed(360));
+    await sleep(speed(320));
     cellsToShatter.forEach(i => { grid[i] = null; });
     const mask = tumbleDown();
     renderGrid(false, mask);
     SFX.drop();
-    await sleep(speed(420));
+    await sleep(speed(370));
   }
 
   // ---- charged gem multipliers ----
@@ -1059,8 +1229,10 @@ async function doSpin(opts = {}) {
       SFX.orb();
       const { x, y } = cellCenter(o.i);
       burst(x, y, ['#00E5FF', '#8B5CF6', '#fff'], 14, 6);
+      floatText(x, y, '⚡×' + o.v, o.v >= 25 ? 'orb big' : 'orb');
       await sleep(speed(330));
     }
+    floatText(innerWidth / 2, cellCenter(14).y, 'TOTAL ×' + (isFree ? state.fsMult + orbSum : orbSum), 'orb big');
     if (isFree) {
       state.fsMult += orbSum;
       totalWin = tumbleWin * state.fsMult;
@@ -1095,16 +1267,26 @@ async function doSpin(opts = {}) {
     if (mult >= 100) unlock('win100');
     if (mult >= 150) unlock('legendary');
     addHistory(isFree ? 'FREE' : 'SPIN', totalWin, chain);
+    winStreak++;
+    if (winStreak >= 3 && !isFree) {
+      SFX.streak(winStreak);
+      toast(`🔥 ${winStreak} WIN STREAK — the gems are blazing!`);
+    }
     if (mult >= 15) { await bigWin(totalWin, mult); }
     else {
       SFX.win();
-      $('win-message').textContent = chain > 1 ? `${chain}-CHAIN TUMBLE WIN` : 'WIN';
+      $('win-message').textContent =
+        chain >= 5 ? `🔥 ${chain}-CHAIN INFERNO` :
+        chain > 1 ? `⛓️ ${chain}-CHAIN TUMBLE WIN` :
+        mult >= 5 ? '💎 SPARKLING WIN' : '✨ WIN';
       $('win-amount').textContent = '+' + fmt(totalWin);
       burst(innerWidth / 2, innerHeight / 2, WIN_COLORS, 24, 6);
     }
   } else {
     addHistory(isFree ? 'FREE' : 'SPIN', 0, chain);
-    $('win-message').textContent = ['So close…', 'The gems are charging…', 'Tumble awaits…', 'Next one shatters!'][Math.floor(Math.random() * 4)];
+    if (!isFree) winStreak = 0;
+    const loss = SKINS[state.skin].loss;
+    $('win-message').textContent = loss[Math.floor(Math.random() * loss.length)];
     if (!isFree) SFX.lose();
   }
 
@@ -1129,6 +1311,7 @@ async function doSpin(opts = {}) {
   }
 
   spinning = false;
+  $('spin-btn').classList.remove('spinning');
   // free spins are player-triggered: press SPIN for each one (AUTO still works)
   if (state.fs === 0 && state.fsTotal > 0) await endFreeSpins();
   updateUI();
@@ -1191,7 +1374,11 @@ function bigWin(amount, mult) {
     $('shake-root').classList.add('shake');
     setTimeout(() => $('shake-root').classList.remove('shake'), 500);
     SFX.bigwin();
-    coinShower(mult >= 80 ? 120 : 70);
+    coinShower(mult >= 80 ? 140 : 80);
+    const burster = setInterval(() => {
+      burst(rand(innerWidth * .2, innerWidth * .8), rand(innerHeight * .2, innerHeight * .6), WIN_COLORS, 16, 7);
+      if (mult >= 40) coinShower(12);
+    }, 450);
     if (navigator.vibrate) navigator.vibrate([60, 40, 60, 40, 120]);
     const dur = state.turbo ? 900 : 2200, t0 = performance.now();
     let done = false;
@@ -1204,6 +1391,7 @@ function bigWin(amount, mult) {
     requestAnimationFrame(frame);
     function close() {
       done = true;
+      clearInterval(burster);
       ov.classList.remove('active');
       ov.removeEventListener('click', close);
       $('win-message').textContent = winTier(mult);
@@ -1692,7 +1880,42 @@ function updateUI() {
   else sb.innerHTML = `SPIN<span class="sub">${state.ante ? 'ANTE ' + fmt(betCost()) : 'GOOD LUCK'}</span>`;
   renderStats();
   updateForge();
+  checkSkinUnlocks();
 }
+/* ---------- Unlockable modes (Zombie / Broforce) ---------- */
+function checkSkinUnlocks() {
+  if (!state.skinUnlocks.zombie && state.stats.spins >= 66) {
+    state.skinUnlocks.zombie = true;
+    unlock('zombie');
+    toast(SKINS.zombie.unlockText);
+  }
+  if (!state.skinUnlocks.bro && state.level >= 4) {
+    state.skinUnlocks.bro = true;
+    unlock('bro');
+    toast(SKINS.bro.unlockText);
+  }
+  $('zombie-btn').classList.toggle('hidden', !state.skinUnlocks.zombie);
+  $('bro-btn').classList.toggle('hidden', !state.skinUnlocks.bro);
+  $('zombie-btn').classList.toggle('on', state.skin === 'zombie');
+  $('bro-btn').classList.toggle('on', state.skin === 'bro');
+}
+function applySkin() {
+  document.body.className = SKINS[state.skin].cls;
+  $('logo').textContent = SKINS[state.skin].logo;
+  $('subtitle').textContent = SKINS[state.skin].subtitle;
+  renderGrid(false);
+  renderPaytable();
+}
+function toggleSkin(id) {
+  if (spinning) { toast('Finish the spin first!'); return; }
+  state.skin = state.skin === id ? 'base' : id;
+  applySkin();
+  if (state.skin === 'zombie') { tone(98, .9, 'sawtooth', .1, 0, -40); toast('🧟 The crypt takes over… everything is cursed now.'); }
+  else if (state.skin === 'bro') { [392, 523, 659, 784].forEach((f, i) => tone(f, .22, 'square', .1, i * .1)); toast('💪 BROFORCE ENGAGED. FREEDOM INTENSIFIES.'); }
+  else toast('💎 Back to the prism realm.');
+  updateUI(); save();
+}
+
 function updateForge() {
   $('forge-fill').style.width = (state.forge / FORGE_CAP * 100) + '%';
   const btn = $('forge-btn');
@@ -1703,12 +1926,12 @@ function updateForge() {
 function renderPaytable() {
   let html = '';
   for (const s of SYMBOLS) {
-    html += `<div class="pay-row"><span class="pe">${s.e}</span><span class="pn">${s.name}</span>
+    html += `<div class="pay-row"><span class="pe">${skinE(s)}</span><span class="pn">${skinName(s)}</span>
       <span class="pv">8+ ×${s.pays[0]} · 10+ ×${s.pays[1]} · 12+ ×${s.pays[2]}</span></div>`;
   }
-  html += `<div class="pay-row"><span class="pe">🌈</span><span class="pn">Prism Scatter</span><span class="pv">4+ anywhere = FREE SPINS<br>4=×3 · 5=×5 · 6+=×100</span></div>`;
-  html += `<div class="pay-row"><span class="pe">⚡</span><span class="pn">Charged Gem</span><span class="pv">×2–×500 · multiplies tumble wins</span></div>`;
-  html += `<div class="pay-row"><span class="pe">🪙</span><span class="pn">Gold Nugget</span><span class="pv">6+ = LIGHTNING HOLD &amp; WIN</span></div>`;
+  html += `<div class="pay-row"><span class="pe">${skinE(SPECIALS.scatter)}</span><span class="pn">${skinName(SPECIALS.scatter)}</span><span class="pv">4+ anywhere = FREE SPINS<br>4=×3 · 5=×5 · 6+=×100</span></div>`;
+  html += `<div class="pay-row"><span class="pe">${skinE(SPECIALS.charge)}</span><span class="pn">${skinName(SPECIALS.charge)}</span><span class="pv">×2–×500 · multiplies tumble wins</span></div>`;
+  html += `<div class="pay-row"><span class="pe">${skinE(SPECIALS.coin)}</span><span class="pn">${skinName(SPECIALS.coin)}</span><span class="pv">6+ = LIGHTNING HOLD &amp; WIN</span></div>`;
   html += `<div class="feature-note">
     <b>Scatter pays:</b> 8+ matching gems anywhere on the 6×5 grid pay — no paylines. Wins shatter and new gems <b>tumble</b> in; chains continue until no win remains.<br><br>
     <b>⚡ Charged Gems</b> survive tumbles. When a spin sequence wins, all visible charge values are <b>summed and multiply the total</b>.<br><br>
@@ -1773,6 +1996,8 @@ $('sound-btn').onclick = () => { state.sound = !state.sound; SFX.click(); update
 $('buy-btn').onclick = openBuyMenu;
 $('forge-btn').onclick = openForge;
 $('gems-card').onclick = () => openBank(false);
+$('zombie-btn').onclick = () => { audio(); toggleSkin('zombie'); };
+$('bro-btn').onclick = () => { audio(); toggleSkin('bro'); };
 $('level-card').onclick = () => toast(`⭐ Level ${state.level} · ${fmt(Math.floor(state.xp))}/${fmt(xpNeeded(state.level))} XP<br><span style="color:var(--dim);font-size:.75rem">Earn XP by wagering and winning. Level-ups pay gem rewards.</span>`);
 
 document.querySelectorAll('.tab-btn').forEach(b => b.onclick = () => {
@@ -1804,6 +2029,10 @@ window.addEventListener('resize', sizeCanvases);
 
 /* ---- boot ---- */
 load();
+if (!SKINS[state.skin] || (state.skin !== 'base' && !state.skinUnlocks[state.skin])) state.skin = 'base';
+document.body.className = SKINS[state.skin].cls;
+$('logo').textContent = SKINS[state.skin].logo;
+$('subtitle').textContent = SKINS[state.skin].subtitle;
 sizeCanvases();
 particleLoop();
 fillGrid();
@@ -1820,6 +2049,14 @@ setInterval(() => { // ambient jackpot drift so the strip always feels alive
   $('jp-minor-val').textContent = fmt(state.jp.minor);
   $('jp-mini-val').textContent = fmt(state.jp.mini);
 }, 1400);
+setInterval(() => { // idle gem sparkles keep the board alive
+  if (spinning || document.hidden) return;
+  const cells = $('grid').children;
+  const i = Math.floor(Math.random() * cells.length);
+  if (!cells[i]) return;
+  cells[i].classList.add('sparkle');
+  setTimeout(() => cells[i] && cells[i].classList.remove('sparkle'), 900);
+}, 2300);
 setTimeout(() => {
   if (dailyReady()) openDaily();
   else if (state.stats.spins === 0) toast('💎 Welcome to PRISMFALL!<br><span style="color:var(--dim);font-size:.75rem">Match 8+ gems anywhere. Wins tumble. ⚡ gems multiply everything.</span>');
