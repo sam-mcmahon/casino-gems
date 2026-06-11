@@ -182,7 +182,7 @@ body{
   transition:background .2s;
 }
 .cell .sym{display:block;line-height:1;filter:drop-shadow(0 2px 4px rgba(0,0,0,.6))}
-.cell.drop .sym{animation:gemDrop .46s cubic-bezier(.3,.8,.4,1) backwards}
+.cell.drop .sym{animation:gemDrop .36s cubic-bezier(.3,.8,.4,1) backwards}
 @keyframes gemDrop{
   0%{transform:translateY(-220%) scale(.92,1.12);opacity:.2}
   68%{transform:translateY(0) scale(1,1);opacity:1}
@@ -978,8 +978,9 @@ body.bro #machine-sheen{display:none}
   </div>
 
   <details id="version-footer">
-    <summary>v1.6 · PRISMFALL — Gem Cascade Casino</summary>
+    <summary>v1.7 · PRISMFALL — Gem Cascade Casino</summary>
     <div id="changelog">
+      <b>v1.7</b> — The Loren &amp; Ellen patch: faster spinner (cascade rhythm ~25% snappier, turbo even quicker) and a sim-validated generosity tune — base hit rate 18%→30%, base RTP 38%→84%, free spins ~1/73, Hold &amp; Win ~1/101, takeover events ~1/32 spins, forge boons every ~33 spins, more Charged Gems on the board.<br>
       <b>v1.6</b> — Claude Design game-feel pass: takeover entrances are now staged showpieces (color wash sweep, zombie hands clawing from the soil / jet squadron strafing the sky, realm title stamp, logo glitch-morphs letter by letter). Ambient life per realm — prismatic sheen sweeps the machine + shooting stars (PRISMFALL), drifting fog, background lightning and rising embers (GRIMFALL), eagle/chopper flybys (BROFALL). Juicier cascades: squash-and-stretch landings, every gem shatters in its own colors, 7-of-a-kind near-miss wobble, machine pulse on chain milestones. Win ladder polish: tier-specific big-win choreography with shockwave rings (LEGENDARY throbs forever), count-up tick sounds, gold pulse on your balance. Micro-feel: bet bump, forge surge glow at 80% with a ready celebration, particle cap for buttery mobile perf. Performance: removed animated mega-blurs and all always-on box-shadow/filter animations (transform/opacity only now), particle engine sleeps when idle, lighter dock blur, reduced-motion support — silky on mobile.<br>
       <b>v1.5</b> — Mobile Safari truly dialed in: the grid is now sized explicitly from viewport width AND dynamic viewport height (no more aspect-ratio blowups under page zoom — the spin dock can never cover the board). Desktop now features the game: the machine is the hero at up to 760px with gems that scale to fill it, info panels demoted to a fixed-width sidekick.<br>
       <b>v1.4</b> — Takeover modes are now SPECIAL EVENTS, not toggles: land a winning cluster of 10+ 🟢 Emerald Chips to trigger a ZOMBIE OUTBREAK, or 10+ 🔺 Ruby Shards to trigger a BROFORCE RAID. Each takes over the whole game for 10 spins with different winning — all wins ×2, plus 25% reanimation odds (outbreak) or per-spin strafing runs that convert gems toward premium clusters (raid). Countdown banner, lightning entry, "realm restores" exit.<br>
@@ -1031,19 +1032,19 @@ const SYMBOLS = [
   { id:'diamond', e:'💎', name:'Diamond',        w:3,  pays:[5, 12, 25] },
   { id:'orbgem',  e:'🔮', name:'Mystic Amethyst',w:4,  pays:[2.5, 8, 15] },
   { id:'eye',     e:'🧿', name:'Sapphire Eye',   w:5,  pays:[2, 5, 10] },
-  { id:'amber',   e:'🔶', name:'Amber Gem',      w:7,  pays:[1.5, 3, 6] },
-  { id:'topaz',   e:'🔷', name:'Royal Topaz',    w:7,  pays:[1.2, 2.5, 5] },
-  { id:'aqua',    e:'💠', name:'Aquamarine',     w:8,  pays:[1, 2, 4] },
-  { id:'ruby',    e:'🔺', name:'Ruby Shard',     w:10, pays:[0.6, 1.5, 3] },
-  { id:'emerald', e:'🟢', name:'Emerald Chip',   w:10, pays:[0.5, 1.2, 2.5] },
-  { id:'garnet',  e:'🔻', name:'Garnet Shard',   w:11, pays:[0.4, 1, 2] },
+  { id:'amber',   e:'🔶', name:'Amber Gem',      w:8.4,  pays:[1.5, 3, 6] },
+  { id:'topaz',   e:'🔷', name:'Royal Topaz',    w:8.4,  pays:[1.2, 2.5, 5] },
+  { id:'aqua',    e:'💠', name:'Aquamarine',     w:9.6,  pays:[1, 2, 4] },
+  { id:'ruby',    e:'🔺', name:'Ruby Shard',     w:15, pays:[0.6, 1.5, 3] },
+  { id:'emerald', e:'🟢', name:'Emerald Chip',   w:15, pays:[0.5, 1.2, 2.5] },
+  { id:'garnet',  e:'🔻', name:'Garnet Shard',   w:16.5, pays:[0.4, 1, 2] },
 ];
 const SPECIALS = {
   scatter: { id:'scatter', e:'🌈', name:'Prism Scatter' },
   charge:  { id:'charge',  e:'⚡', name:'Charged Gem' },
   coin:    { id:'coin',    e:'🪙', name:'Gold Nugget' },
 };
-const BASE_SCATTER_W = 2.0, BASE_CHARGE_W = 1.05, BASE_COIN_W = 4.0;
+const BASE_SCATTER_W = 2.7, BASE_CHARGE_W = 1.7, BASE_COIN_W = 5.4;
 
 /* Charged Gem multiplier table: [value, weight] */
 const CHARGE_VALUES = [
@@ -1056,7 +1057,7 @@ const HW_VALUES = [
   ['MINI',1.6],['MINOR',.8],['MAJOR',.3]
 ];
 const JP_SEED = { grand:100000, major:12500, minor:2500, mini:500 };
-const FORGE_CAP = 150;
+const FORGE_CAP = 120;
 
 const ACHIEVEMENTS = [
   { id:'first_spin',   e:'🎰', n:'First Spin',      d:'Spin the reels once' },
@@ -1178,7 +1179,7 @@ const $ = id => document.getElementById(id);
 const fmt = n => Math.floor(n).toLocaleString('en-US');
 const rand = (a, b) => a + Math.random() * (b - a);
 const sleep = ms => new Promise(r => setTimeout(r, ms));
-const speed = ms => state.turbo ? Math.max(40, ms * 0.35) : ms;
+const speed = ms => state.turbo ? Math.max(30, ms * 0.25) : ms;
 function weightedPick(pairs) {
   let total = 0; for (const [, w] of pairs) total += w;
   let r = Math.random() * total;
@@ -1372,7 +1373,7 @@ function renderGrid(dropAll = false, dropMask = null) {
         div.classList.add('drop');
         const span = document.createElement('span');
         span.className = 'sym'; span.textContent = skinE(c.sym);
-        span.style.animationDelay = (dropAll ? col * 55 + Math.random() * 60 : Math.random() * 90) + 'ms';
+        span.style.animationDelay = (dropAll ? col * 42 + Math.random() * 45 : Math.random() * 70) + 'ms';
         div.appendChild(span);
       } else {
         div.innerHTML = `<span class="sym">${skinE(c.sym)}</span>`;
@@ -1479,7 +1480,7 @@ async function doSpin(opts = {}) {
 
   fillGrid();
   // random meteor shower event (base game only)
-  if (!isFree && Math.random() < 1 / 45) {
+  if (!isFree && Math.random() < 1 / 30) {
     await sleep(speed(120));
     const n = 1 + Math.floor(Math.random() * 3);
     for (let k = 0; k < n; k++) {
@@ -1503,7 +1504,7 @@ async function doSpin(opts = {}) {
   }
   renderGrid(true);
   for (let c = 0; c < COLS; c++) setTimeout(() => SFX.drop(), speed(55) * c);
-  await sleep(speed(440));
+  await sleep(speed(260));
 
   // near-cluster anticipation: exactly 7 of a kind visible? those gems wobble
   {
@@ -1526,7 +1527,7 @@ async function doSpin(opts = {}) {
   if (scatters === 3) {
     $('machine').classList.add('anticipate');
     SFX.riser();
-    await sleep(speed(1300));
+    await sleep(speed(950));
     $('machine').classList.remove('anticipate');
   }
 
@@ -1570,7 +1571,7 @@ async function doSpin(opts = {}) {
     cellsToShatter.forEach(i => gridEl.children[i].classList.add('win-glow'));
     $('win-message').textContent = wins.map(w => `${w.count}× ${skinE(w.sym)}`).join('  ');
     $('win-amount').textContent = '+' + fmt(tumbleWin);
-    await sleep(speed(380));
+    await sleep(speed(290));
     SFX.shatter(chain);
     cellsToShatter.forEach(i => {
       gridEl.children[i].classList.remove('win-glow');
@@ -1580,12 +1581,12 @@ async function doSpin(opts = {}) {
     });
     state.forge = Math.min(FORGE_CAP, state.forge + cellsToShatter.size);
     updateForge();
-    await sleep(speed(320));
+    await sleep(speed(250));
     cellsToShatter.forEach(i => { grid[i] = null; });
     const mask = tumbleDown();
     renderGrid(false, mask);
     SFX.drop();
-    await sleep(speed(370));
+    await sleep(speed(290));
   }
   };
   await runTumbles();
@@ -1704,7 +1705,7 @@ async function doSpin(opts = {}) {
     const carried = [];
     grid.forEach((c, i) => { if (c && c.sym.id === 'coin') carried.push(i); });
     await startHoldWin(carried.length);
-  } else if (!isFree && scatters < 4 && Math.random() < 1 / 130) {
+  } else if (!isFree && scatters < 4 && Math.random() < 1 / 90) {
     toast('✂️ You unearthed a RAW GEM!');
     await sleep(speed(800));
     openGemCutter();
@@ -1722,7 +1723,7 @@ async function doSpin(opts = {}) {
   save();
 
   if (autoSpin) {
-    await sleep(speed(650));
+    await sleep(speed(500));
     if (autoSpin && !spinning) return doSpin();
   }
 }
