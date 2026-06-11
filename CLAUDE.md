@@ -27,7 +27,7 @@
 
 Both are inside the `<details id="version-footer">` near the bottom of `index.html`.
 
-## Current version: v1.5
+## Current version: v1.6
 
 ## Architecture
 - Single file: `index.html` — all CSS, JS, and HTML inline, no build step
